@@ -2,7 +2,7 @@
 
 using namespace std;
 
-//读文件，返回结构体数组，后面再进行后续处理
+//�������ݲ��洢�ڽṹ��������
 vector<BreastCancerInstance> read_WBDC_data(const string& filename) {
     vector<BreastCancerInstance> data;
 
@@ -14,22 +14,21 @@ vector<BreastCancerInstance> read_WBDC_data(const string& filename) {
             size_t pos = line.find(',');
             auto id = line.substr(0, pos);
             instance.id = id;
-            line.erase(0, pos + 1); // 删除已读取的ID和逗号
+            line.erase(0, pos + 1); 
 
             pos = line.find(',');
             string diagnosisStr = line.substr(0, pos);
             auto diagnosis = (diagnosisStr == "M");
             instance.diagnosis = diagnosis;
-            line.erase(0, pos + 1); // 删除已读取的诊断标签和逗号
+            line.erase(0, pos + 1);
 
             while ((pos = line.find(',')) != string::npos) {
                 string featureStr = line.substr(0, pos);
                 float feature = stof(featureStr);
                 instance.features.push_back(feature);
-                line.erase(0, pos + 1); // 删除已读取的特征值和逗号
+                line.erase(0, pos + 1); 
             }
 
-            // 处理最后一个特征值（无逗号分隔）
             float feature = stof(line);
             instance.features.push_back(feature);
 
@@ -44,7 +43,7 @@ vector<BreastCancerInstance> read_WBDC_data(const string& filename) {
     return data;
 }
 
-//打印数据
+//���Դ��룺��ӡ�м���
 void print_WBDC_Data(const vector<BreastCancerInstance>& data) {
     for (const auto& instance : data) {
         cout << "ID: " << instance.id << endl;
@@ -57,7 +56,7 @@ void print_WBDC_Data(const vector<BreastCancerInstance>& data) {
     }
 }
 
-//把结构体数组中的特征值转化为矩阵
+//������ֵת��Ϊdouble����
 vector<vector<double>> reverse_BreastCancerInstance_to_features(vector<BreastCancerInstance> vec){
     vector<vector<double>> res;
 
@@ -73,7 +72,7 @@ vector<vector<double>> reverse_BreastCancerInstance_to_features(vector<BreastCan
     return res;
 }
 
-//将结构体中的diagnosis属性转换为double向量
+//��diagnosisת��Ϊdouble����
 vector<double> reverse_BreastCancerInstance_to_labels(vector<BreastCancerInstance> vec) {
     vector<double> labels;
 
