@@ -20,19 +20,10 @@ find_package(Eigen3 REQUIRED NO_MODULE)  #查找并加载 Eigen3 包
 
 INCLUDE_DIRECTORIES(${EMP-OT_INCLUDE_DIRS})  #添加引用 EMP-OT 包的头文件路径
 
-#add_executable(secure_ML
-#    src/secureML.cpp
-#    src/linear_regression.cpp
-#    src/online_phase.cpp
-#    src/setup_phase.cpp
-#    src/util.cpp)
-
 add_executable(PPLR
     src/pplr.cpp
     src/read_WBDC.cpp
     src/preparation.cpp
 )
-
-#target_link_libraries(secure_ML ${EMP-OT_LIBRARIES} Eigen3::Eigen)  #指定 secure_ML 可执行文件链接 EMP-OT 库和 Eigen3 库
 
 target_link_libraries(PPLR ${EMP-OT_LIBRARIES} Eigen3::Eigen)
