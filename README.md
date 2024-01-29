@@ -4,7 +4,7 @@
 
 # **Build**
 
-*We use C++ to develop this project, and this work should work on Ubuntu*
+*We use C++ to develop this project, and this work should work on Ubuntu.*
 
 ### **Preparation**
 ```
