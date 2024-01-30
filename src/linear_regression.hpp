@@ -1,66 +1,68 @@
 #ifndef LR_HPP
 #define LR_HPP
-#include "setup_phase.hpp"
-#include "online_phase.hpp"
+#include "setup_phase.hpp"  // °üº¬ÉèÖÃ½×¶ÎµÄÍ·ÎÄ¼ş
+#include "online_phase.hpp"  // °üº¬ÔÚÏß½×¶ÎµÄÍ·ÎÄ¼ş
 
 class LinearRegression {
 public:
-    emp::NetIO* io; // ç½‘ç»œè¾“å…¥è¾“å‡ºå¯¹è±¡æŒ‡é’ˆ
-    int party; // å½“å‰å‚ä¸æ–¹ï¼ˆALICEæˆ–BOBï¼‰
-    int n, d, t; // è®­ç»ƒæ•°æ®å¤§å°ï¼ˆæ ·æœ¬æ•°ã€ç‰¹å¾æ•°ï¼‰ã€è¿­ä»£æ¬¡æ•°
-    RowMatrixXi64 X; // è®­ç»ƒæ•°æ®çŸ©é˜µ
-    ColVectorXi64 Y; // è®­ç»ƒæ ‡ç­¾å‘é‡
-    ColVectorXi64 w; // æƒé‡å‘é‡ï¼ˆæ•´æ•°ç±»å‹ï¼‰
-    ColVectorXd w_d; // æƒé‡å‘é‡ï¼ˆæµ®ç‚¹æ•°ç±»å‹ï¼‰
-    SetupPhase* setup; // è®¾ç½®é˜¶æ®µå¯¹è±¡æŒ‡é’ˆ
-    OnlinePhase* online; // åœ¨çº¿é˜¶æ®µå¯¹è±¡æŒ‡é’ˆ
+    emp::NetIO* io;  // ÍøÂçÊäÈëÊä³ö¶ÔÏóÖ¸Õë
+    int party;  // µ±Ç°²ÎÓë·½£¨ALICE»òBOB£©
+    int n, d, t;  // ÑµÁ·Êı¾İ´óĞ¡¡¢ÌØÕ÷Êı¡¢µü´ú´ÎÊı
+    RowMatrixXi64 X;  // ÑµÁ·Êı¾İ¾ØÕó
+    ColVectorXi64 Y;  // ÑµÁ·±êÇ©ÏòÁ¿
+    ColVectorXi64 w;  // È¨ÖØÏòÁ¿£¨ÕûÊıÀàĞÍ£©
+    ColVectorXd w_d;  // È¨ÖØÏòÁ¿£¨Ë«¾«¶È¸¡µãÊıÀàĞÍ£©
+    SetupPhase* setup;  // ÉèÖÃ½×¶Î¶ÔÏóÖ¸Õë
+    OnlinePhase* online;  // ÔÚÏß½×¶Î¶ÔÏóÖ¸Õë
 
     LinearRegression(RowMatrixXi64& training_data, ColVectorXi64& training_labels,
                      TrainingParams params, emp::NetIO* io) {
-        this->n = params.n; // æ ·æœ¬æ•°
-        this->d = params.d; // ç‰¹å¾æ•°
-        this->t = (params.n) / BATCH_SIZE; // è¿­ä»£æ¬¡æ•°
-        this->X = training_data; // è¾“å…¥è®­ç»ƒæ•°æ®
-        this->Y = training_labels; // è¾“å…¥è®­ç»ƒæ ‡ç­¾
-        this->io = io; // è¾“å…¥è¾“å‡ºå¯¹è±¡æŒ‡é’ˆ
-        this->party = PARTY; // å‚ä¸æ–¹ï¼ˆALICEæˆ–BOBï¼‰
-        this->w.resize(d); // åˆå§‹åŒ–æƒé‡å‘é‡ï¼ˆæ•´æ•°ç±»å‹ï¼‰
-        this->w_d.resize(d); // åˆå§‹åŒ–æƒé‡å‘é‡ï¼ˆæµ®ç‚¹æ•°ç±»å‹ï¼‰
+        this->n = params.n;  // ÉèÖÃÑµÁ·Êı¾İ´óĞ¡
+        this->d = params.d;  // ÉèÖÃÌØÕ÷Êı
+        this->t = (params.n) / BATCH_SIZE;  // ¼ÆËãµü´ú´ÎÊı
+        this->X = training_data;  // ¿½±´ÑµÁ·Êı¾İ
+        this->Y = training_labels;  // ¿½±´ÑµÁ·±êÇ©
+        this->io = io;  // ÉèÖÃÍøÂçÊäÈëÊä³ö¶ÔÏóÖ¸Õë
+        this->party = PARTY;  // ÉèÖÃµ±Ç°²ÎÓë·½£¨ALICE»òBOB£©
+        this->w.resize(d);  // µ÷ÕûÈ¨ÖØÏòÁ¿´óĞ¡
+        this->w_d.resize(d);  // µ÷ÕûÈ¨ÖØÏòÁ¿´óĞ¡
 
-        this->setup = new SetupPhase(n, d, t, io); // åˆ›å»ºè®¾ç½®é˜¶æ®µå¯¹è±¡
-        setup->generateMTs(); // ç”Ÿæˆä¼ªéšæœºæ•°
-        std::cout << "Setup done" << std::endl;
-        
+        this->setup = new SetupPhase(n, d, t, io);  // ´´½¨ÉèÖÃ½×¶Î¶ÔÏó
+        setup->generateMTs();  // Éú³ÉËæ»úÈıÔª×é
+       
         SetupTriples triples;
-        setup->getMTs(&triples); // è·å–ä¼ªéšæœºæ•°
+        setup->getMTs(&triples);  // »ñÈ¡Ëæ»úÈıÔª×é
 
-        RowMatrixXi64 Xi(X.rows(), X.cols()); // ç”¨äºå­˜å‚¨åŠ å™ªåçš„è®­ç»ƒæ•°æ®çŸ©é˜µ
-        ColVectorXi64 Yi(Y.rows(), Y.cols()); // ç”¨äºå­˜å‚¨åŠ å™ªåçš„è®­ç»ƒæ ‡ç­¾å‘é‡
+        RowMatrixXi64 Xi(X.rows(), X.cols());  // ³õÊ¼»¯´æ´¢¼ÓÃÜÊı¾İµÄ¾ØÕó
+        ColVectorXi64 Yi(Y.rows(), Y.cols());  // ³õÊ¼»¯´æ´¢¼ÓÃÜ±êÇ©µÄÏòÁ¿
         
-        if (party == emp::ALICE) { // å¦‚æœå½“å‰å‚ä¸æ–¹æ˜¯ALICE
-            emp::PRG prg;
-            RowMatrixXi64 rX(X.rows(), X.cols()); // éšæœºæ•°çŸ©é˜µï¼ˆç”¨äºåŠ å™ªï¼‰
-            ColVectorXi64 rY(Y.rows(), Y.cols()); // éšæœºæ•°å‘é‡ï¼ˆç”¨äºåŠ å™ªï¼‰
-            prg.random_data(rX.data(), X.rows() * X.cols() * sizeof(uint64_t)); // ç”Ÿæˆéšæœºæ•° rX
-            prg.random_data(rY.data(), Y.rows() * Y.cols() * sizeof(uint64_t)); // ç”Ÿæˆéšæœºæ•° rY
-            Xi = X + rX; // åŠ å™ªåçš„è®­ç»ƒæ•°æ®çŸ©é˜µ
-            Yi = Y + rY; // åŠ å™ªåçš„è®­ç»ƒæ ‡ç­¾å‘é‡
-            rX *= -1; // å°† rX ä¸­çš„å…ƒç´ å–è´Ÿ
-            rY *= -1; // å°† rY ä¸­çš„å…ƒç´ å–è´Ÿ
-            send<RowMatrixXi64>(io, rX); // å°†éšæœºæ•° rX å‘é€ç»™å¯¹æ–¹
-            send<ColVectorXi64>(io, rY); // å°†éšæœºæ•° rY å‘é€ç»™å¯¹æ–¹
-        } else { // å¦‚æœå½“å‰å‚ä¸æ–¹æ˜¯BOB
-            recv<RowMatrixXi64>(io, Xi); // ä»å¯¹æ–¹æ¥æ”¶åŠ å™ªåçš„è®­ç»ƒæ•°æ®çŸ©é˜µ
-            recv<ColVectorXi64>(io, Yi); // ä»å¯¹æ–¹æ¥æ”¶åŠ å™ªåçš„è®­ç»ƒæ ‡ç­¾å‘é‡
+        if (party == emp::ALICE) {  // Èç¹ûµ±Ç°²ÎÓë·½ÊÇALICE
+            emp::PRG prg;  // Î±Ëæ»úÊıÉú³ÉÆ÷¶ÔÏó
+            RowMatrixXi64 rX(X.rows(), X.cols());  // Ëæ»úÊı¾İ¾ØÕó
+            ColVectorXi64 rY(Y.rows(), Y.cols());  // Ëæ»ú±êÇ©ÏòÁ¿
+            prg.random_data(rX.data(), X.rows() * X.cols() * sizeof(uint64_t));  // Éú³ÉËæ»úÊı¾İ rX
+            prg.random_data(rY.data(), Y.rows() * Y.cols() * sizeof(uint64_t));  // Éú³ÉËæ»úÊı¾İ rY
+            Xi = X + rX;  // ¼ÓÃÜºóµÄÑµÁ·Êı¾İ
+            Yi = Y + rY;  // ¼ÓÃÜºóµÄÑµÁ·±êÇ©
+            rX *= -1;  // ¶Ô rX ÖĞµÄÔªËØÈ¡·´
+            rY *= -1;  // ¶Ô rY ÖĞµÄÔªËØÈ¡·´
+            send<RowMatrixXi64>(io, rX);  // ·¢ËÍËæ»úÊı¾İ rX
+            send<ColVectorXi64>(io, rY);  // ·¢ËÍËæ»úÊı¾İ rY
+        } else {  // Èç¹ûµ±Ç°²ÎÓë·½ÊÇBOB
+            recv<RowMatrixXi64>(io, Xi);  // ´Ó¶Ô·½½ÓÊÕ¼ÓÃÜºóµÄÑµÁ·Êı¾İ
+            recv<ColVectorXi64>(io, Yi);  // ´Ó¶Ô·½½ÓÊÕ¼ÓÃÜºóµÄÑµÁ·±êÇ©
         }
 
-        this->online = new OnlinePhase(params, io, &triples); // åˆ›å»ºåœ¨çº¿é˜¶æ®µå¯¹è±¡
-        online->initialize(Xi, Yi); // åˆå§‹åŒ–åœ¨çº¿é˜¶æ®µ
+        this->online = new OnlinePhase(params, io, &triples);  // ´´½¨ÔÚÏß½×¶Î¶ÔÏó
+        online->initialize(Xi, Yi);  // ÔÚÔÚÏß½×¶Î³õÊ¼»¯
 
-        train_model(); // è®­ç»ƒæ¨¡å‹
+        train_model();  // ÑµÁ·Ä£ĞÍ
     }
 
-    void train_model(); // è®­ç»ƒæ¨¡å‹çš„å‡½æ•°
-    void test_model(RowMatrixXd& testing_data, ColVectorXd& testing_labels); // æµ‹è¯•æ¨¡å‹çš„å‡½æ•°
+    // ÑµÁ·Ä£ĞÍµÄ·½·¨
+    void train_model();
+
+    // ²âÊÔÄ£ĞÍµÄ·½·¨
+    void test_model(RowMatrixXd& testing_data, ColVectorXd& testing_labels);
 };
 #endif

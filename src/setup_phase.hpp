@@ -1,59 +1,59 @@
 #ifndef SETUP_HPP
 #define SETUP_HPP
 
-#include "util.hpp"
-#include <emp-ot/emp-ot.h>
+#include "util.hpp"  // °üº¬³£ÓÃµÄ¹¤¾ßº¯Êı
+#include <emp-ot/emp-ot.h>  // °üº¬emp-ot¿â
 
 /**
- * SetupPhase ç±»ç”¨äºæ‰§è¡Œè®¾ç½®é˜¶æ®µçš„æ“ä½œã€‚
+ * SetupPhase ÀàÓÃÓÚÖ´ĞĞĞ­ÒéµÄÉèÖÃ½×¶Î²Ù×÷¡£
  */
 class SetupPhase{
 public:
-    int n, d, t;
-    int party;
-    RowMatrixXi64 Ai; // çŸ©é˜µ Ai
-    ColMatrixXi64 Bi; // çŸ©é˜µ Bi
-    ColMatrixXi64 Ci; // çŸ©é˜µ Ci
-    ColMatrixXi64 Bi_; // çŸ©é˜µ Bi_
-    ColMatrixXi64 Ci_; // çŸ©é˜µ Ci_
+    int n, d, t;  // Êı¾İĞĞÊı£¬Êı¾İÁĞÊı£¬ÒÔ¼° Bi ºÍ Ci µÄ¾ØÕóÎ¬¶È
+    int party;  // µ±Ç°²ÎÓë·½£¨ALICE»òBOB£©
+    RowMatrixXi64 Ai;  // ¾ØÕó Ai
+    ColMatrixXi64 Bi;  // ¾ØÕó Bi
+    ColMatrixXi64 Ci;  // ¾ØÕó Ci
+    ColMatrixXi64 Bi_;  // ¾ØÕó Bi_
+    ColMatrixXi64 Ci_;  // ¾ØÕó Ci_
 
-    emp::NetIO* io; // ç½‘ç»œ I/O å¯¹è±¡
-    emp::SHOTExtension<emp::NetIO>* send_ot; // OT å‘é€æ–¹å¯¹è±¡
-    emp::SHOTExtension<emp::NetIO>* recv_ot; // OT æ¥æ”¶æ–¹å¯¹è±¡
-    emp::PRG prg; // ä¼ªéšæœºç”Ÿæˆå™¨å¯¹è±¡
+    emp::NetIO* io;  // ÍøÂç I/O ¶ÔÏóÖ¸Õë
+    emp::SHOTExtension<emp::NetIO>* send_ot;  // OT ·¢ËÍ¶Ë¶ÔÏóÖ¸Õë
+    emp::SHOTExtension<emp::NetIO>* recv_ot;  // OT ½ÓÊÕ¶Ë¶ÔÏóÖ¸Õë
+    emp::PRG prg;  // Î±Ëæ»úÊıÉú³ÉÆ÷¶ÔÏó
 
     /**
-     * SetupPhase æ„é€ å‡½æ•°ç”¨äºåˆå§‹åŒ–å¯¹è±¡ã€‚
-     * @param n æ•°æ®è¡Œæ•°
-     * @param d æ•°æ®åˆ—æ•°
-     * @param t çŸ©é˜µ Biã€Ci çš„åˆ—æ•°
-     * @param io ç½‘ç»œ I/O å¯¹è±¡æŒ‡é’ˆ
+     * ¹¹Ôìº¯Êı SetupPhase ÓÃÓÚ³õÊ¼»¯¶ÔÏó¡£
+     * @param n Êı¾İĞĞÊı
+     * @param d Êı¾İÁĞÊı
+     * @param t ¾ØÕó Bi ºÍ Ci µÄÎ¬¶È
+     * @param io ÍøÂç I/O ¶ÔÏóÖ¸Õë
      */
     SetupPhase(int n, int d, int t, emp::NetIO* io){
         this->n = n;
         this->d = d;
         this->t = t;
         this->io = io;
-        this->send_ot = new emp::SHOTExtension<emp::NetIO>(io); // åˆå§‹åŒ– OT å‘é€æ–¹å¯¹è±¡
-        this->recv_ot = new emp::SHOTExtension<emp::NetIO>(io); // åˆå§‹åŒ– OT æ¥æ”¶æ–¹å¯¹è±¡
-        this->party = PARTY; // è®¾ç½®å½“å‰å‚ä¸æ–¹
+        this->send_ot = new emp::SHOTExtension<emp::NetIO>(io);  // ³õÊ¼»¯ OT ·¢ËÍ¶Ë¶ÔÏó
+        this->recv_ot = new emp::SHOTExtension<emp::NetIO>(io);  // ³õÊ¼»¯ OT ½ÓÊÕ¶Ë¶ÔÏó
+        this->party = PARTY;  // ÉèÖÃµ±Ç°²ÎÓë·½
 
-        Ai.resize(n, d); // è°ƒæ•´çŸ©é˜µ Ai å¤§å°
-        Bi.resize(d, t); // è°ƒæ•´çŸ©é˜µ Bi å¤§å°
-        Ci.resize(BATCH_SIZE, t); // è°ƒæ•´çŸ©é˜µ Ci å¤§å°
-        Bi_.resize(BATCH_SIZE, t); // è°ƒæ•´çŸ©é˜µ Bi_ å¤§å°
-        Ci_.resize(d, t); // è°ƒæ•´çŸ©é˜µ Ci_ å¤§å°
+        Ai.resize(n, d);  // µ÷Õû¾ØÕó Ai µÄ´óĞ¡
+        Bi.resize(d, t);  // µ÷Õû¾ØÕó Bi µÄ´óĞ¡
+        Ci.resize(BATCH_SIZE, t);  // µ÷Õû¾ØÕó Ci µÄ´óĞ¡
+        Bi_.resize(BATCH_SIZE, t);  // µ÷Õû¾ØÕó Bi_ µÄ´óĞ¡
+        Ci_.resize(d, t);  // µ÷Õû¾ØÕó Ci_ µÄ´óĞ¡
 
-        initialize_matrices(); // åˆå§‹åŒ–çŸ©é˜µ
-        std::cout << "Matrices Initialized" << std::endl;
+        initialize_matrices();  // ³õÊ¼»¯¾ØÕó
+        std::cout << "Matrices Initialized" << std::endl;  // Êä³öÏûÏ¢£º¾ØÕóÒÑ³õÊ¼»¯
     }
 
-    void initialize_matrices(); // åˆå§‹åŒ–çŸ©é˜µ
-    void generateMTs(); // ç”Ÿæˆ MTs
+    void initialize_matrices();  // ³õÊ¼»¯¾ØÕóµÄ·½·¨
+    void generateMTs();  // Éú³É MTs µÄ·½·¨
     void secure_mult(int N, int D, vector<vector<uint64_t>>& a,
-                     vector<uint64_t>& b, vector<uint64_t> &c); // å®‰å…¨ä¹˜æ³•
-    void getMTs(SetupTriples* triples); // è·å– MTs
-    void verify(); // éªŒè¯å‡½æ•°
+                     vector<uint64_t>& b, vector<uint64_t> &c);  // °²È«³Ë·¨µÄ·½·¨
+    void getMTs(SetupTriples* triples);  // »ñÈ¡ MTs µÄ·½·¨
+    void verify();  // ÑéÖ¤º¯Êı
 };
 
 #endif // SETUP_HPP
