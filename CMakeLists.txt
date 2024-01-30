@@ -26,6 +26,7 @@ add_executable(PPLR
     src/preparation.cpp
     src/logistic_regression.cpp
     src/offline_phase.cpp 
+    src/online_phase.cpp
     src/util.cpp
 )
 
