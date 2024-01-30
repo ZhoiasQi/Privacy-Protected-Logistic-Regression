@@ -56,10 +56,22 @@ int main(int argc, char** argv){
     uint64_dataLabels = Fixed_Point_Representation_Labels(dataLabels);
 
     //划分测试集和训练集
-    
+    vector<vector<uint64_t>> training_Features;
+    vector<vector<uint64_t>> testing_Features;
+    vector<uint64_t> training_Labels;
+    vector<uint64_t> testing_Labels;
+
+    // 计算训练集的大小
+    size_t trainingSize = uint64_dataFeatures.size() * 2 / 3;
+
+    // 根据计算结果划分数据到训练集和测试集
+    training_Features.assign(uint64_dataFeatures.begin(), uint64_dataFeatures.begin() + trainingSize);
+    testing_Features.assign(uint64_dataFeatures.begin() + trainingSize, uint64_dataFeatures.end());
+    training_Labels.assign(uint64_dataLabels.begin(), uint64_dataLabels.begin() + trainingSize);
+    testing_Labels.assign(uint64_dataLabels.begin() + trainingSize, uint64_dataLabels.end());
+
     
 
-    /****************************对数据进行前期预处理**************************************/
     // NUM_INSTANCES = NUM_INSTANCES * num_iters;
 
     // NetIO* io = new NetIO(PARTY == ALICE ? nullptr : address.c_str(), port);

@@ -24,6 +24,9 @@ add_executable(PPLR
     src/pplr.cpp
     src/read_WBDC.cpp
     src/preparation.cpp
+    src/logistic_regression.cpp
+    src/offline_phase.cpp 
+    src/util.cpp
 )
 
 target_link_libraries(PPLR ${EMP-OT_LIBRARIES} Eigen3::Eigen)

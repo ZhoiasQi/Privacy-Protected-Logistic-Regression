@@ -1,5 +1,5 @@
-#ifndef READ_WBDC_HPP
-#define READ_WBDC_HPP
+#ifndef READ_WBDC_H
+#define READ_WBDC_H
 
 #include <iostream>
 #include <vector>

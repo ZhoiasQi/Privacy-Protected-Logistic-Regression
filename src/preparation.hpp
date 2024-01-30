@@ -6,7 +6,7 @@
 #include <iostream>
 #include <vector>
 #include <iomanip>
-#include "defines.hpp"
+#include "logistic_regression.hpp"
 
 using namespace std;
 
