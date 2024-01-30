@@ -38,8 +38,7 @@ vector<uint64_t> Fixed_Point_Representation_Labels(vector<double> data){
 
     for(int i = 0; i < m; i++){
         //TODO: 这里要不要<<13还需要再讨论
-        
-        //data[i] *= SCALING_FACTOR;
+        data[i] *= SCALING_FACTOR;
         res.push_back((uint64_t)data[i]);
         //测试代码：打印中间结果
         //cout << res[i] << endl;
