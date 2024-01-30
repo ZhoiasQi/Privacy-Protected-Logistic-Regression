@@ -55,9 +55,9 @@ int main(int argc, char** argv){
     uint64_dataFeatures = Fixed_Point_Representation_Features(dataFeatures);
     uint64_dataLabels = Fixed_Point_Representation_Labels(dataLabels);
 
-    //TODO: 划分测试集和训练集
-
-    // /****************************划分测试集和训练集**************************************/
+    //划分测试集和训练集
+    
+    
 
     /****************************对数据进行前期预处理**************************************/
     // NUM_INSTANCES = NUM_INSTANCES * num_iters;
