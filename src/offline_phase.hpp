@@ -45,6 +45,7 @@ public:
     void generateMTs();
     void secure_mult(int N, int D, vector<vector<uint64_t>>& a, vector<uint64_t>& b, vector<uint64_t> &c);
     void getMTs(SetupTriples *triples);
+    void verify();
 };
 
 #endif
