@@ -17,7 +17,7 @@ public:
     ColVectorXi64 w;  // 权重向量（整数类型）
     ColVectorXd w_d;  // 权重向量（双精度浮点数类型）
     OfflineSetUp* setup;  // 设置阶段对象指针
-    
+
     
     // OnlinePhase* online;  // 在线阶段对象指针
 
