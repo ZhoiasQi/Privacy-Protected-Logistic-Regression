@@ -37,16 +37,14 @@ public:
         Bi_.resize(BATCH_SIZE, t);  // 调整矩阵 Bi_ 的大小
         Ci_.resize(d, t);  // 调整矩阵 Ci_ 的大小
 
-        //TODO：后续理解一下这里每个矩阵的作用
         initialize_matrices();  // 初始化矩阵
         cout << "Matrices Initialized" << endl;  
-
-        //
     }
 
     void initialize_matrices();
     void generateMTs();
     void secure_mult(int N, int D, vector<vector<uint64_t>>& a, vector<uint64_t>& b, vector<uint64_t> &c);
+    void getMTs(SetupTriples *triples);
 };
 
 #endif

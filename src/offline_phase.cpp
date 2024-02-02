@@ -23,7 +23,33 @@ void OfflineSetUp::initialize_matrices(){
  * 将这些数据转换为相应的矩阵类型 Ci 和 Ci_。在函数末尾，输出信息表示 MTs 已生成，并可以选择在 DEBUG 模式下进行验证。
  */
 void OfflineSetUp::generateMTs(){
-    
+    vector<vector<uint64_t>> ci(t, vector<uint64_t>(BATCH_SIZE)); 
+    vector<vector<uint64_t>> ci_(t, vector<uint64_t>(d)); 
+
+    for(int i = 0; i < t; i++){
+        RowMatrixXi64 Ai_b = Ai.block(i * BATCH_SIZE, 0, BATCH_SIZE, d); // 截取 Ai 的子矩阵 Ai_b
+        vector<vector<uint64_t>> ai(BATCH_SIZE, vector<uint64_t>(d)); 
+        RowMatrixXi64_to_vector2d(Ai_b, ai); // 将库形式的 Ai_b 转换为二维 vector ai
+
+        RowMatrixXi64 Ai_bt = Ai_b.transpose(); // Ai_b 的转置矩阵
+        vector<vector<uint64_t>> ai_t(d, vector<uint64_t>(BATCH_SIZE));
+        RowMatrixXi64_to_vector2d(Ai_bt, ai_t); // 将 Ai_bt 转换为二维 vector
+
+        vector<uint64_t> bi = ColVectorXi64_to_vector(Bi.col(i)); // 获取 Bi 的列向量，并转换为 vector
+        vector<uint64_t> bi_ = ColVectorXi64_to_vector(Bi_.col(i)); // 获取 Bi_ 的列向量，并转换为 vector
+
+        secure_mult(BATCH_SIZE, d, ai, bi, ci[i]); // 执行安全乘法操作，得到 ci[i]
+        secure_mult(d, BATCH_SIZE, ai_t, bi_, ci_[i]); // 执行安全乘法操作，得到 ci_[i]
+    }
+
+    vector2d_to_ColMatrixXi64(ci, Ci); // 将 ci 转换为 ColMatrixXi64 类型的矩阵 Ci
+    vector2d_to_ColMatrixXi64(ci_, Ci_); // 将 ci_ 转换为 ColMatrixXi64 类型的矩阵 Ci_
+    cout << "Triples Generated" << endl;
+
+    #if DEBUG
+        verify();
+    #endif
+
 }
 
 
@@ -247,3 +273,12 @@ void OfflineSetUp::secure_mult(int N, int D, vector<vector<uint64_t>>& a, vector
         }
     }
 }
+
+void OfflineSetUp::getMTs(SetupTriples *triples){
+    triples->Ai = this->Ai;
+    triples->Bi = this->Bi;
+    triples->Ci = this->Ci;
+    triples->Bi_ = this->Bi_;
+    triples->Ci_ = this->Ci_;
+}
+

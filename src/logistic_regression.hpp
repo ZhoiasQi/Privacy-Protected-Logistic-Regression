@@ -18,10 +18,7 @@ public:
     ColVectorXd w_d;  // 权重向量（双精度浮点数类型）
     OfflineSetUp* setup;  // 设置阶段对象指针
 
-    
     // OnlinePhase* online;  // 在线阶段对象指针
-
-
 
     LogisticRegression(RowMatrixXi64& training_data, ColVectorXi64& training_labels, TrainingParams params, emp::NetIO* io) {
         this->n = params.n;  // 设置训练数据大小
@@ -34,7 +31,11 @@ public:
         this->w.resize(d);  // 调整权重向量大小
         this->w_d.resize(d);  // 调整权重向量大小
 
-        this->setup = new OfflineSetUp();
+        this->setup = new OfflineSetUp(n, d, t, io);
+        setup->generateMTs();  // 生成随机三元组
+
+        SetupTriples triples;
+        setup->getMTs(&triples);  // 获取随机三元组
     }
 
     void train_model();
