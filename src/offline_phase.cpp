@@ -52,9 +52,7 @@ void OfflineSetUp::generateMTs(){
 
 }
 
-
 void OfflineSetUp::secure_mult(int N, int D, vector<vector<uint64_t>>& a, vector<uint64_t>& b, vector<uint64_t> &c){
-    // 声明变量
     int NUM_OT[BITLEN];
     int total_ot = 0, num_ot;
 
@@ -74,6 +72,7 @@ void OfflineSetUp::secure_mult(int N, int D, vector<vector<uint64_t>>& a, vector
     x1 = new block[total_ot];
     rec = new block[total_ot];
 
+    // 初始化索引
     int indexX0 = 0;
     int indexX1 = 0;
 
@@ -82,6 +81,7 @@ void OfflineSetUp::secure_mult(int N, int D, vector<vector<uint64_t>>& a, vector
     sigma = new bool[total_ot];
     int index_sigma = 0;
 
+    // 分配内存并填充随机数
     uint64_t ***X0;
     X0 = new uint64_t**[N];
     for(int p = 0; p < N; p++) {
@@ -92,7 +92,6 @@ void OfflineSetUp::secure_mult(int N, int D, vector<vector<uint64_t>>& a, vector
         }
     }
 
-    // 循环进行安全乘法协议
     for(int j = 0; j < D; j++){
         int_to_bool(bits_B, b[j]);
 
@@ -107,7 +106,6 @@ void OfflineSetUp::secure_mult(int N, int D, vector<vector<uint64_t>>& a, vector
             int elements_in_block = 128/(64-z);
             int indexA = 0;
 
-            // 生成随机数并计算协议需要的值
             for (int y = 0; y < num_ot; y++){
                 sigma[index_sigma++] = bits_B[z];
             }
@@ -119,19 +117,69 @@ void OfflineSetUp::secure_mult(int N, int D, vector<vector<uint64_t>>& a, vector
                 int elements_in_temp = 64/(64-z);
                 int left_bitsLo = (64 % ((64-z)*elements_in_temp));
 
-                // 计算协议所需值
+                r_temp_lo = (X0[indexA][z][j] << z);
+                r_temp_lo >>= z;
+                temp_lo = (randomA[indexA++] << z);
+                temp_lo >>= z;
+                flag--;
                 for (int p=1; p<elements_in_temp; p++){
-                    //... 省略部分代码
+                    if (indexA <= N-1 && flag){
+                        uint64_t r_next_element = (X0[indexA][z][j] << z);
+                        r_next_element >>= z;
+                        r_next_element <<= ((64-z) * p);
+                        r_temp_lo ^= r_next_element;
+                        uint64_t next_element = (randomA[indexA++] << z);
+                        next_element >>= z;
+                        next_element <<= ((64-z) * p);
+                        temp_lo ^= next_element;
+                        flag--;
+                    }
+                    else
+                        break;
                 }
 
-                // 生成 x0 和 x1
+                if (left_bitsLo){
+                    if (indexA <= N-1 && flag){
+                        uint64_t r_split_element = (X0[indexA][z][j] << z);
+                        r_split_element >>= z;
+                        r_temp_lo ^= (r_split_element << (64-left_bitsLo));
+                        r_temp_hi ^= (r_split_element >> left_bitsLo);
+                        uint64_t split_element = (randomA[indexA++] << z);
+                        split_element >>= z;
+                        temp_lo ^= (split_element << (64-left_bitsLo));
+                        temp_hi ^= (split_element >> left_bitsLo);
+                        flag--;
+                    }
+                }
+
+                for (int p=0; p<elements_in_temp; p++){
+                    if (indexA <= N-1 && flag){
+                        uint64_t r_next_element = (X0[indexA][z][j] << z);
+                        r_next_element >>= z;
+                        if (left_bitsLo)
+                            r_next_element <<= (((64-z)*p)+(64-z-left_bitsLo));
+                        else
+                            r_next_element <<= ((64-z)*p);
+                        r_temp_hi ^= r_next_element;
+                        uint64_t next_element = (randomA[indexA++] << z);
+                        next_element >>= z;
+                        if (left_bitsLo)
+                            next_element <<= (((64-z)*p)+(64-z-left_bitsLo));
+                        else
+                            next_element <<= ((64-z)*p);
+                        temp_hi ^= next_element;
+                        flag--;
+                    }
+                    else
+                        break;
+                }
+
                 x0[indexX0++] = makeBlock(r_temp_hi, r_temp_lo);
                 x1[indexX1++] = makeBlock(temp_hi, temp_lo);
+
             }
         }
     }
-
-    // 发送或接收数据
     if (party == ALICE){
         send_ot->send(x0, x1, total_ot);
     }
@@ -140,90 +188,79 @@ void OfflineSetUp::secure_mult(int N, int D, vector<vector<uint64_t>>& a, vector
     }
 
     if (party == BOB){
-        // BOB发送 x0 和 x1 给对方
         send_ot->send(x0, x1, total_ot);
     }
     else if (party == ALICE){
-        // ALICE接收数据到 rec 和 sigma
         recv_ot->recv(rec, sigma, total_ot);
     }
 
-int indexRec = 0;
-for (int j = 0; j < D; j++) {
-    // 外层循环，用于处理每一个 D 维度下的数据
-    for (int z = 0; z < 64; z++) {
-        // 内层循环，对每一个位数 z 进行处理
-        int indexA = 0;
-        num_ot = NUM_OT[z]; // 获取 NUM_OT 数组中索引为 z 的值
-        int elements_in_block = 128 / (64 - z); // 每个块中有多少元素
+    int indexRec = 0;
+    for (int j = 0; j < D; j++){
+        for (int z = 0; z < 64; z++){
+            int indexA = 0;
+            num_ot = NUM_OT[z];
+            int elements_in_block = 128/(64-z);
 
-        for (int y = 0; y < num_ot; y++) {
-            // 循环处理 num_ot 次
-            int flag = elements_in_block; // 用于控制每个块中元素的处理次数
-            uint64_t temp_lo = extract_lo64(rec[indexRec]); // 从 rec 中提取 64 位的低位数据
-            uint64_t temp_hi = extract_hi64(rec[indexRec++]); // 从 rec 中提取 64 位的高位数据
+            for (int y = 0; y < num_ot; y++){
+                int flag = elements_in_block;
+                uint64_t temp_lo = extract_lo64(rec[indexRec]);
+                uint64_t temp_hi = extract_hi64(rec[indexRec++]);
 
-            int elements_in_temp = 64 / (64 - z); // 每个元素中占位数量
-            int left_bitsLo = (64 % ((64 - z) * elements_in_temp)); // 计算剩余的位数
-            uint64_t mask;
-            // 根据位数 z 计算 mask
-            if ((64 - z) < 64)
-                mask = ((1ULL << (64 - z)) - 1);
-            else
-                mask = -1;
+                int elements_in_temp = 64/(64-z);
+                int left_bitsLo = (64 % ((64-z) * elements_in_temp));
+                uint64_t mask;
+                if((64 - z) < 64)
+                    mask = ((1ULL << (64-z)) - 1);
+                else
+                    mask = -1;
 
-            for (int p = 0; p < elements_in_temp; p++) {
-                // 处理每个块中的元素
-                if (indexA <= N - 1 && flag) {
-                    uint64_t next_element = (temp_lo & mask); // 提取下一个元素
-                    next_element <<= z; // 左移 z 位
-                    c[indexA++] += next_element; // 累加到 c 中
-                    temp_lo >>= 64 - z; 
-                    flag--; 
+                for(int p = 0; p < elements_in_temp; p++){
+                    if (indexA <= N-1 && flag) {
+                        uint64_t next_element = (temp_lo & mask);
+                        next_element <<= z;
+                        c[indexA++] += next_element;
+                        temp_lo >>= 64-z;
+                        flag--;
 
-                } else
-                    break;
-            }
-            if (left_bitsLo) {
-                // 如果还有剩余的位数
-                if (indexA <= N - 1 && flag) {
-                    uint64_t split_mask;
-                    // 计算拆分 mask 来处理剩余位数
-                    if ((64 - z - left_bitsLo) < 64)
-                        split_mask = ((1ULL << (64 - z - left_bitsLo)) - 1);
+                    }
                     else
-                        split_mask = -1;
-                    uint64_t next_element = temp_hi & split_mask; // 按拆分 mask 提取数据
-                    next_element <<= left_bitsLo; 
-                    next_element ^= temp_lo; 
-                    next_element <<= z;
-                    c[indexA++] += next_element; 
-                    temp_hi >>= (64 - z - left_bitsLo); 
-                    flag--; 
+                        break;
+                }
+                if (left_bitsLo){
+                    if (indexA <= N-1 && flag){
+                        uint64_t split_mask;
+                        if((64-z-left_bitsLo) < 64)
+                            split_mask = ((1ULL << (64-z-left_bitsLo)) -1);
+                        else
+                            split_mask = -1;
+                        uint64_t next_element = temp_hi & split_mask;
+                        next_element <<= left_bitsLo;
+                        next_element ^= temp_lo;
+                        next_element <<= z;
+                        c[indexA++] += next_element;
+                        temp_hi >>= (64-z-left_bitsLo);
+                        flag--;
+                    }
+                }
+                for(int p = 0; p < elements_in_temp; p++){
+                    if (indexA <= N-1 && flag) {
+                        uint64_t next_element = (temp_hi & mask);
+                        next_element <<= z;
+                        c[indexA++] += next_element;
+                        temp_hi >>= 64-z;
+
+                        flag--;
+                    }
+                    else
+                        break;
                 }
             }
-            for (int p = 0; p < elements_in_temp; p++) {
-                // 处理剩余的高位数据
-                if (indexA <= N - 1 && flag) {
-                    uint64_t next_element = (temp_hi & mask); 
-                    next_element <<= z; 
-                    c[indexA++] += next_element; 
-                    temp_hi >>= 64 - z; 
-
-                    flag--;
-
-                } else
-                    break;
+            for (int p = 0; p < N; p++){
+                c[p] -= (X0[p][z][j] << z);
             }
         }
-        for (int p = 0; p < N; p++) {
-            // 更新结果数组 c，减去 X0 中对应位置的值
-            c[p] -= (X0[p][z][j] << z);
-        }
     }
-}
 
-    // 释放动态分配的内存
     for(int p = 0; p < N; p++) {
         for(int e = 0; e < BITLEN; e++){
             delete X0[p][e];
@@ -232,13 +269,250 @@ for (int j = 0; j < D; j++) {
     }
     delete X0;
 
-    // 计算最终的结果，如果必要，也可以在前面的循环中计算
     for(int i = 0; i < N; i++){
         for(int k = 0; k < D; k++){
             c[i] += (a[i][k] * b[k]);
         }
     }
 }
+//     // 声明变量
+//     int NUM_OT[BITLEN];
+//     int total_ot = 0, num_ot;
+
+//     // 计算总的 OT 数目
+//     for (int p = 0; p < 64; p++){
+//         int temp = 128/(64-p);
+//         NUM_OT[p] = N/temp;
+//         if (N % temp)
+//             NUM_OT[p]++;
+//         total_ot += NUM_OT[p];
+//     }
+//     total_ot *= D;
+
+//     // 分配存储空间
+//     block *x0, *x1, *rec;
+//     x0 = new block[total_ot];
+//     x1 = new block[total_ot];
+//     rec = new block[total_ot];
+
+//     int indexX0 = 0;
+//     int indexX1 = 0;
+
+//     bool bits_B[64];
+//     bool* sigma;
+//     sigma = new bool[total_ot];
+//     int index_sigma = 0;
+    
+//     uint64_t ***X0;
+//     X0 = new uint64_t**[N];
+//     for(int p = 0; p < N; p++) {
+//         X0[p] = new uint64_t*[BITLEN];
+//         for(int e = 0; e < BITLEN; e++){
+//             X0[p][e] = new uint64_t[D];
+//             prg.random_data(X0[p][e], D * 8);
+//         }
+//     }
+
+//     // 循环进行安全乘法协议
+//     for(int j = 0; j < D; j++){
+//         int_to_bool(bits_B, b[j]);
+
+//         for (int z = 0; z < 64; z++){
+//             num_ot = NUM_OT[z];
+//             uint64_t randomA[N];
+
+//             for (int p = 0; p < N; p++){
+//                 randomA[p] = X0[p][z][j] + a[p][j];
+//             }
+
+//             int elements_in_block = 128/(64-z);
+//             int indexA = 0;
+
+//             // 生成随机数并计算协议需要的值
+//             for (int y = 0; y < num_ot; y++){
+//                 sigma[index_sigma++] = bits_B[z];
+//             }
+
+//             for(int y = 0; y < num_ot; y++){
+//                 int flag = elements_in_block;
+//                 uint64_t temp_lo=0, temp_hi=0;
+//                 uint64_t r_temp_lo=0, r_temp_hi=0;
+//                 int elements_in_temp = 64/(64-z);
+//                 int left_bitsLo = (64 % ((64-z)*elements_in_temp));
+
+//                 // 计算协议所需值
+//                 r_temp_lo = (X0[indexA][z][j] << z);
+//                 r_temp_lo >>= z;
+//                 temp_lo = (randomA[indexA++] << z);
+//                 temp_lo >>= z;
+//                 flag--;
+//                 for (int p=1; p<elements_in_temp; p++){
+//                     if (indexA <= N-1 && flag){
+//                         uint64_t r_next_element = (X0[indexA][z][j] << z);
+//                         r_next_element >>= z;
+//                         r_next_element <<= ((64-z) * p);
+//                         r_temp_lo ^= r_next_element;
+//                         uint64_t next_element = (randomA[indexA++] << z);
+//                         next_element >>= z;
+//                         next_element <<= ((64-z) * p);
+//                         temp_lo ^= next_element;
+//                         flag--;
+//                     }
+//                     else
+//                         break;
+//                 }
+
+//                 if (left_bitsLo){
+//                     if (indexA <= N-1 && flag){
+//                         uint64_t r_split_element = (X0[indexA][z][j] << z);
+//                         r_split_element >>= z;
+//                         r_temp_lo ^= (r_split_element << (64-left_bitsLo));
+//                         r_temp_hi ^= (r_split_element >> left_bitsLo);
+//                         uint64_t split_element = (randomA[indexA++] << z);
+//                         split_element >>= z;
+//                         temp_lo ^= (split_element << (64-left_bitsLo));
+//                         temp_hi ^= (split_element >> left_bitsLo);
+//                         flag--;
+//                     }
+//                 }
+
+//                 for (int p=0; p<elements_in_temp; p++){
+//                     if (indexA <= N-1 && flag){
+//                         uint64_t r_next_element = (X0[indexA][z][j] << z);
+//                         r_next_element >>= z;
+//                         if (left_bitsLo)
+//                             r_next_element <<= (((64-z)*p)+(64-z-left_bitsLo));
+//                         else
+//                             r_next_element <<= ((64-z)*p);
+//                         r_temp_hi ^= r_next_element;
+//                         uint64_t next_element = (randomA[indexA++] << z);
+//                         next_element >>= z;
+//                         if (left_bitsLo)
+//                             next_element <<= (((64-z)*p)+(64-z-left_bitsLo));
+//                         else
+//                             next_element <<= ((64-z)*p);
+//                         temp_hi ^= next_element;
+//                         flag--;
+//                     }
+//                     else
+//                         break;
+//                 }
+
+//                 // 生成 x0 和 x1
+//                 x0[indexX0++] = makeBlock(r_temp_hi, r_temp_lo);
+//                 x1[indexX1++] = makeBlock(temp_hi, temp_lo);
+//             }
+//         }
+//     }
+
+//     // 发送或接收数据
+//     if (party == ALICE){
+//         send_ot->send(x0, x1, total_ot);
+//     }
+//     else if (party == BOB){
+//         recv_ot->recv(rec, sigma, total_ot);
+//     }
+
+//     if (party == BOB){
+//         // BOB发送 x0 和 x1 给对方
+//         send_ot->send(x0, x1, total_ot);
+//     }
+//     else if (party == ALICE){
+//         // ALICE接收数据到 rec 和 sigma
+//         recv_ot->recv(rec, sigma, total_ot);
+//     }
+
+//     int indexRec = 0;
+//     for (int j = 0; j < D; j++) {
+//         // 外层循环，用于处理每一个 D 维度下的数据
+//         for (int z = 0; z < 64; z++) {
+//             // 内层循环，对每一个位数 z 进行处理
+//             int indexA = 0;
+//             num_ot = NUM_OT[z]; // 获取 NUM_OT 数组中索引为 z 的值
+//             int elements_in_block = 128 / (64 - z); // 每个块中有多少元素
+
+//             for (int y = 0; y < num_ot; y++) {
+//                 // 循环处理 num_ot 次
+//                 int flag = elements_in_block; // 用于控制每个块中元素的处理次数
+//                 uint64_t temp_lo = extract_lo64(rec[indexRec]); // 从 rec 中提取 64 位的低位数据
+//                 uint64_t temp_hi = extract_hi64(rec[indexRec++]); // 从 rec 中提取 64 位的高位数据
+
+//                 int elements_in_temp = 64 / (64 - z); // 每个元素中占位数量
+//                 int left_bitsLo = (64 % ((64 - z) * elements_in_temp)); // 计算剩余的位数
+//                 uint64_t mask;
+//                 // 根据位数 z 计算 mask
+//                 if ((64 - z) < 64)
+//                     mask = ((1ULL << (64 - z)) - 1);
+//                 else
+//                     mask = -1;
+
+//                 for (int p = 0; p < elements_in_temp; p++) {
+//                     // 处理每个块中的元素
+//                     if (indexA <= N - 1 && flag) {
+//                         uint64_t next_element = (temp_lo & mask); // 提取下一个元素
+//                         next_element <<= z; // 左移 z 位
+//                         c[indexA++] += next_element; // 累加到 c 中
+//                         temp_lo >>= 64 - z; 
+//                         flag--; 
+
+//                     } else
+//                         break;
+//                 }
+//                 if (left_bitsLo) {
+//                     // 如果还有剩余的位数
+//                     if (indexA <= N - 1 && flag) {
+//                         uint64_t split_mask;
+//                         // 计算拆分 mask 来处理剩余位数
+//                         if ((64 - z - left_bitsLo) < 64)
+//                             split_mask = ((1ULL << (64 - z - left_bitsLo)) - 1);
+//                         else
+//                             split_mask = -1;
+//                         uint64_t next_element = temp_hi & split_mask; // 按拆分 mask 提取数据
+//                         next_element <<= left_bitsLo; 
+//                         next_element ^= temp_lo; 
+//                         next_element <<= z;
+//                         c[indexA++] += next_element; 
+//                         temp_hi >>= (64 - z - left_bitsLo); 
+//                         flag--; 
+//                     }
+//                 }
+//                 for (int p = 0; p < elements_in_temp; p++) {
+//                     // 处理剩余的高位数据
+//                     if (indexA <= N - 1 && flag) {
+//                         uint64_t next_element = (temp_hi & mask); 
+//                         next_element <<= z; 
+//                         c[indexA++] += next_element; 
+//                         temp_hi >>= 64 - z; 
+
+//                         flag--;
+
+//                     } else
+//                         break;
+//                 }
+//             }
+//             for (int p = 0; p < N; p++) {
+//                 // 更新结果数组 c，减去 X0 中对应位置的值
+//                 c[p] -= (X0[p][z][j] << z);
+//             }
+//         }
+//     }
+
+//     // 释放动态分配的内存
+//     for(int p = 0; p < N; p++) {
+//         for(int e = 0; e < BITLEN; e++){
+//             delete X0[p][e];
+//         }
+//         delete X0[p];
+//     }
+//     delete X0;
+
+//     // 计算最终的结果，如果必要，也可以在前面的循环中计算
+//     for(int i = 0; i < N; i++){
+//         for(int k = 0; k < D; k++){
+//             c[i] += (a[i][k] * b[k]);
+//         }
+//     }
+// }
 
 void OfflineSetUp::getMTs(SetupTriples *triples){
     triples->Ai = this->Ai;
@@ -249,5 +523,6 @@ void OfflineSetUp::getMTs(SetupTriples *triples){
 }
 
 void OfflineSetUp::verify(){
+
 
 }
