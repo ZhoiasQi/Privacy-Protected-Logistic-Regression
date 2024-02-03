@@ -15,13 +15,6 @@ void OfflineSetUp::initialize_matrices(){
     prg.random_data(Bi_.data(), BATCH_SIZE * t * 8); // 随机生成 Bi_ 数据
 }
 
-/**
- * 生成 MTs。
- * 根据 Ai、Bi 和 Bi_ 进行安全乘法操作，生成 Ci 和 Ci_。
- * 根据 t 的值分别截取 Ai 的子矩阵，进行转置操作，并将其转换为二维的 vector 数据结构。
- * 分别执行安全乘法操作，得到 ci[i] 和 ci_[i]。
- * 将这些数据转换为相应的矩阵类型 Ci 和 Ci_。在函数末尾，输出信息表示 MTs 已生成，并可以选择在 DEBUG 模式下进行验证。
- */
 void OfflineSetUp::generateMTs(){
     vector<vector<uint64_t>> ci(t, vector<uint64_t>(BATCH_SIZE)); 
     vector<vector<uint64_t>> ci_(t, vector<uint64_t>(d)); 

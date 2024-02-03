@@ -36,6 +36,8 @@ public:
 
         SetupTriples triples;
         setup->getMTs(&triples);  // 获取随机三元组
+
+
         // RowMatrixXi64 Xi(X.rows(), X.cols());  // 初始化存储加密数据的矩阵
         // ColVectorXi64 Yi(Y.rows(), Y.cols());  // 初始化存储加密标签的向量
         
