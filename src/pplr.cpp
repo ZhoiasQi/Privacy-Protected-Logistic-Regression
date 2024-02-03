@@ -138,6 +138,14 @@ int main(int argc, char** argv){
     cout << "Testing" << endl;
     cout << "=======" << endl;
 
+    // int n_;
+
+    // RowMatrixXd testX(n_, params.d);  // 定义测试数据矩阵
+    // vector2d_to_RowMatrixXd(testing_Features, testX); 
+
+    // ColVectorXd testY(n_);  
+    // vector_to_ColVectorXd(testing_Labels, testY);  
+    // logisticRegression.test_model(testX, testY); 
 
     return 0;
 }
