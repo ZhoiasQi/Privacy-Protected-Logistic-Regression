@@ -54,5 +54,9 @@ make
 ### **Execution**
 ```
 cd bin
-./build/bin/result 1 8000 [num_iter] & ./build/bin/result 2 8000 [num_iter]
+//打开两个终端分别各自执行下面的两份命令
+//第一个
+./PPLR 1 8000 [num_iter] 
+//第二个
+./PPLR 2 8000 [num_iter]
 ```
