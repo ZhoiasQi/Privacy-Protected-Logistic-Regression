@@ -292,6 +292,7 @@ void OfflineSetUp::secure_mult(int N, int D, vector<vector<uint64_t>>& a, vector
     }
     delete X0;
 
+    //º∆À„C
     for(int i = 0; i < N; i++){
         for(int k = 0; k < D; k++){
             c[i] += (a[i][k] * b[k]);
@@ -385,5 +386,4 @@ void OfflineSetUp::verify(){
             cout << "Verification Failed" << endl;
         }
     }
-
 }

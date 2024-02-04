@@ -17,8 +17,7 @@ public:
     ColVectorXi64 w;  // 权重向量（整数类型）
     ColVectorXd w_d;  // 权重向量（双精度浮点数类型）
     OfflineSetUp* setup;  // 设置阶段对象指针
-
-    //OnlinePhase* online;  // 在线阶段对象指针
+    OnlinePhase* online;  // 在线阶段对象指针
 
     LogisticRegression(RowMatrixXi64& training_data, ColVectorXi64& training_labels, TrainingParams params, emp::NetIO* io) {
         this->n = params.n;  // 设置训练数据大小
@@ -37,38 +36,31 @@ public:
         SetupTriples triples;
         setup->getMTs(&triples);  // 获取随机三元组
 
-
-        // RowMatrixXi64 Xi(X.rows(), X.cols());  // 初始化存储加密数据的矩阵
-        // ColVectorXi64 Yi(Y.rows(), Y.cols());  // 初始化存储加密标签的向量
+        RowMatrixXi64 Xi(X.rows(), X.cols());  // 初始化存储加密数据的矩阵
+        ColVectorXi64 Yi(Y.rows(), Y.cols());  // 初始化存储加密标签的向量
         
-        // if (party == emp::ALICE) {  // 如果当前参与方是ALICE
-        //     emp::PRG prg;  // 伪随机数生成器对象
-        //     RowMatrixXi64 rX(X.rows(), X.cols());  // 随机数据矩阵
-        //     ColVectorXi64 rY(Y.rows(), Y.cols());  // 随机标签向量
-        //     prg.random_data(rX.data(), X.rows() * X.cols() * sizeof(uint64_t));  // 生成随机数据 rX
-        //     prg.random_data(rY.data(), Y.rows() * Y.cols() * sizeof(uint64_t));  // 生成随机数据 rY
-        //     Xi = X + rX;  // 加密后的训练数据
-        //     Yi = Y + rY;  // 加密后的训练标签
-        //     rX *= -1;  // 对 rX 中的元素取反
-        //     rY *= -1;  // 对 rY 中的元素取反
-        //     send<RowMatrixXi64>(io, rX);  // 发送随机数据 rX
-        //     send<ColVectorXi64>(io, rY);  // 发送随机数据 rY
-        // } else {  // 如果当前参与方是BOB
-        //     recv<RowMatrixXi64>(io, Xi);  // 从对方接收加密后的训练数据
-        //     recv<ColVectorXi64>(io, Yi);  // 从对方接收加密后的训练标签
-        // }
+        if (party == emp::ALICE) {  // 如果当前参与方是ALICE
+            emp::PRG prg;  // 伪随机数生成器对象
+            RowMatrixXi64 rX(X.rows(), X.cols());  // 随机数据矩阵
+            ColVectorXi64 rY(Y.rows(), Y.cols());  // 随机标签向量
+            prg.random_data(rX.data(), X.rows() * X.cols() * sizeof(uint64_t));  // 生成随机数据 rX
+            prg.random_data(rY.data(), Y.rows() * Y.cols() * sizeof(uint64_t));  // 生成随机数据 rY
+            Xi = X + rX;  // 加密后的训练数据
+            Yi = Y + rY;  // 加密后的训练标签
+            rX *= -1;  // 对 rX 中的元素取反
+            rY *= -1;  // 对 rY 中的元素取反
+            send<RowMatrixXi64>(io, rX);  // 发送随机数据 rX
+            send<ColVectorXi64>(io, rY);  // 发送随机数据 rY
+        } else {  // 如果当前参与方是BOB
+            recv<RowMatrixXi64>(io, Xi);  // 从对方接收加密后的训练数据
+            recv<ColVectorXi64>(io, Yi);  // 从对方接收加密后的训练标签
+        }
 
-        // this->online = new OnlinePhase(params, io, &triples);  // 创建在线阶段对象
+        this->online = new OnlinePhase(params, io, &triples);  // 创建在线阶段对象
         // online->initialize(Xi, Yi);  // 在在线阶段初始化
 
         // train_model();  // 训练模型
     }
-
-    // // 训练模型的方法
-    // void train_model();
-
-    // // 测试模型的方法
-    // void test_model(RowMatrixXd& testing_data, ColVectorXd& testing_labels);
 
 };
 
