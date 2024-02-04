@@ -6,15 +6,19 @@ using namespace emp;
 using namespace std;
 
 /**
- * 初始化矩阵的数据。
- * 使用伪随机生成器 prg 随机生成 Ai、Bi 和 Bi_ 数据。
+ *  初始化矩阵的数据。
+ *  使用伪随机生成器 prg 随机生成 Ai、Bi 和 Bi_ 数据。
  */
 void OfflineSetUp::initialize_matrices(){
-    prg.random_data(Ai.data(), n * d * 8); // 随机生成 Ai 数据
-    prg.random_data(Bi.data(), d * t * 8); // 随机生成 Bi 数据
-    prg.random_data(Bi_.data(), BATCH_SIZE * t * 8); // 随机生成 Bi_ 数据
+    prg.random_data(Ai.data(), n * d * 8); // 随机生成 Ai 数据，对应论文中的U矩阵，指代x
+    prg.random_data(Bi.data(), d * t * 8); // 随机生成 Bi 数据，对应论文中的V矩阵，每一列指代一个w在一次迭代中的值
+    prg.random_data(Bi_.data(), BATCH_SIZE * t * 8); // 随机生成 Bi_ 数据，对应论文中的V'，每一列指代Y*-Y在一次迭代中的值
 }
 
+/**
+ *  分割UV矩阵，转置各种变化
+ *  最后得到两个Z矩阵，形成需要的乘法三元组 
+ */
 void OfflineSetUp::generateMTs(){
     vector<vector<uint64_t>> ci(t, vector<uint64_t>(BATCH_SIZE)); 
     vector<vector<uint64_t>> ci_(t, vector<uint64_t>(d)); 
@@ -45,6 +49,13 @@ void OfflineSetUp::generateMTs(){
 
 }
 
+/**
+ *  @brief  安全乘法，输入矩阵A，B得到C，对应的两个矩阵的行列如下
+ * 
+ *  @param a 第一个矩阵，n*d矩阵
+ *  @param b 第二个矩阵，d*1矩阵
+ *  @param c ab乘积矩阵，n*1矩阵
+ */
 void OfflineSetUp::secure_mult(int N, int D, vector<vector<uint64_t>>& a, vector<uint64_t>& b, vector<uint64_t> &c){
     int NUM_OT[BITLEN];
     int total_ot = 0, num_ot;
@@ -74,7 +85,7 @@ void OfflineSetUp::secure_mult(int N, int D, vector<vector<uint64_t>>& a, vector
     sigma = new bool[total_ot];
     int index_sigma = 0;
 
-    // 分配内存并填充随机数
+    // 分配内存并填充随机数,得到N*64*D的矩阵
     uint64_t ***X0;
     X0 = new uint64_t**[N];
     for(int p = 0; p < N; p++) {
@@ -85,7 +96,7 @@ void OfflineSetUp::secure_mult(int N, int D, vector<vector<uint64_t>>& a, vector
         }
     }
 
-
+    // 具体生成x0和x1
     for (int j = 0; j < D; j++) {  
         int_to_bool(bits_B, b[j]);  // 将整数b[j]转换为布尔数组bits_B
 
@@ -175,6 +186,8 @@ void OfflineSetUp::secure_mult(int N, int D, vector<vector<uint64_t>>& a, vector
 
         }
     }
+
+
     if (party == ALICE){
         send_ot->send(x0, x1, total_ot);
     }
@@ -190,27 +203,37 @@ void OfflineSetUp::secure_mult(int N, int D, vector<vector<uint64_t>>& a, vector
     }
 
     int indexRec = 0;
+    // 循环变量 j 从 0 到 D
     for (int j = 0; j < D; j++){
+        // 循环变量 z 从 0 到 64
         for (int z = 0; z < 64; z++){
             int indexA = 0;
             num_ot = NUM_OT[z];
+            // 计算每个块中的元素数量
             int elements_in_block = 128/(64-z);
 
             for (int y = 0; y < num_ot; y++){
+                // 标记元素数目
                 int flag = elements_in_block;
+                // 分别提取 64 位块的低 64 位和高 64 位
                 uint64_t temp_lo = extract_lo64(rec[indexRec]);
                 uint64_t temp_hi = extract_hi64(rec[indexRec++]);
 
+                // 计算每个块中元素的数量
                 int elements_in_temp = 64/(64-z);
+                // 计算剩余的左侧位数
                 int left_bitsLo = (64 % ((64-z) * elements_in_temp));
                 uint64_t mask;
+                // 根据条件设置掩码
                 if((64 - z) < 64)
                     mask = ((1ULL << (64-z)) - 1);
                 else
                     mask = -1;
 
+                // 遍历元素，向结果数组中添加元素
                 for(int p = 0; p < elements_in_temp; p++){
                     if (indexA <= N-1 && flag) {
+                        // 提取下一个元素，并处理加入到结果数组
                         uint64_t next_element = (temp_lo & mask);
                         next_element <<= z;
                         c[indexA++] += next_element;
@@ -221,6 +244,7 @@ void OfflineSetUp::secure_mult(int N, int D, vector<vector<uint64_t>>& a, vector
                     else
                         break;
                 }
+                // 处理剩余的低位
                 if (left_bitsLo){
                     if (indexA <= N-1 && flag){
                         uint64_t split_mask;
@@ -237,8 +261,10 @@ void OfflineSetUp::secure_mult(int N, int D, vector<vector<uint64_t>>& a, vector
                         flag--;
                     }
                 }
+                // 遍历元素，向结果数组中添加高位元素
                 for(int p = 0; p < elements_in_temp; p++){
                     if (indexA <= N-1 && flag) {
+                        // 提取下一个元素，并处理加入到结果数组
                         uint64_t next_element = (temp_hi & mask);
                         next_element <<= z;
                         c[indexA++] += next_element;
@@ -250,11 +276,13 @@ void OfflineSetUp::secure_mult(int N, int D, vector<vector<uint64_t>>& a, vector
                         break;
                 }
             }
+            // 减去 X0 数组中的值
             for (int p = 0; p < N; p++){
                 c[p] -= (X0[p][z][j] << z);
             }
         }
     }
+
 
     for(int p = 0; p < N; p++) {
         for(int e = 0; e < BITLEN; e++){
