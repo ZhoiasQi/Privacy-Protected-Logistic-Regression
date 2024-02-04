@@ -61,12 +61,19 @@ public:
 
         Xi.resize(n, d);
         Ui.resize(n, d);
+        E.resize(n, d);
+        Ei.resize(n, d);
+        Yi.resize(n);
+        Fi.resize(d);
+        F.resize(d);
+        wi.resize(d);
         Vi.resize(d, t);
+        Zi.resize(BATCH_SIZE, t);
         Vi_.resize(BATCH_SIZE, t);
-        
-
-
+        Zi_.resize(d, t);
     }
+
+    void initialize(RowMatrixXi64& Xi, ColVectorXi64& Yi);
 };
 
 #endif 

@@ -57,9 +57,8 @@ public:
         }
 
         this->online = new OnlinePhase(params, io, &triples);  // 创建在线阶段对象
-        // online->initialize(Xi, Yi);  // 在在线阶段初始化
+        online->initialize(Xi, Yi);  // 在在线阶段初始化
 
-        // train_model();  // 训练模型
     }
 
 };
