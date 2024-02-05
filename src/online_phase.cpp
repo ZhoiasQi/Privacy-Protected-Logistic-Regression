@@ -75,8 +75,6 @@ void OnlinePhase::train_batch(int iter, int indexLo){
     ColVectorXi64 F_(BATCH_SIZE);
     ColVectorXi64 delta(d);
     
-    
-
     Y_ = -i * (Eb * F) + X * F + Eb * wi + Z;
 
     truncate(i, SCALING_FACTOR, Y_);

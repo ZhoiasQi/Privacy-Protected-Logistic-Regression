@@ -30,8 +30,6 @@ int main(int argc, char** argv){
         address = "127.0.0.1";
     }
 
-    //NUM_INSTANCES = NUM_INSTANCES * num_iters;
-
     NetIO* io = new NetIO(PARTY == ALICE ? nullptr : address.c_str(), port);
 
     /****************************读取数据集**************************************/
@@ -153,7 +151,7 @@ int main(int argc, char** argv){
     ColVectorXd testY(n_);  
     vector_to_ColVectorXd(testLabelsD, testY);  
 
-    logisticRegression.test_model(testX, testY); 
+    //logisticRegression.test_model(testX, testY); 
 
     return 0;
 }
