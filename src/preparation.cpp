@@ -77,3 +77,36 @@ void print_Max_Min_and_Precision(const vector<vector<double>>& training_data) {
     cout << "Min value: " << min_val << endl;
     cout << "Max precision: " << max_precision << endl;
 }
+
+vector<vector<double>> Fix_to_Double_F(vector<vector<uint64_t>> data){
+    vector<vector<double>> res;
+
+    int m = data.size();
+    int n = data[0].size();
+
+    for(int i = 0; i < m; i++){
+        vector<double> temp;
+        for(int j = 0; j < n; j++){
+            double dataij = (double)data[i][j];
+            dataij /= SCALING_FACTOR;
+            temp.push_back(dataij);
+        }
+        res.push_back(temp);
+    }           
+
+    return res;
+}
+
+vector<double> Fix_to_Double_L(vector<uint64_t> data){
+    vector<double> res;
+
+    int m = data.size();
+
+    for(int i = 0; i < m; i++){
+        double temp = data[i];
+        temp /= SCALING_FACTOR;
+        res.push_back(temp);
+    }   
+
+    return res;
+}

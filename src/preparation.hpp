@@ -15,4 +15,7 @@ vector<uint64_t> Fixed_Point_Representation_Labels(vector<double> data);
 
 void print_Max_Min_and_Precision(const vector<vector<double>>& training_data);
 
+vector<vector<double>> Fix_to_Double_F(vector<vector<uint64_t>> data);
+vector<double> Fix_to_Double_L(vector<uint64_t> data);
+
 #endif

@@ -138,9 +138,17 @@ int main(int argc, char** argv){
     cout << "Testing" << endl;
     cout << "=======" << endl;
 
-    // int n_;
+    int n_;
 
-    // RowMatrixXd testX(n_, params.d);  
+    //因为前期不理解含义把所有的训练集测试集全都浮点数转定点数了，现在要把训练集的转回来
+    vector<vector<double>> testFeaturesD;
+    vector<double> testLabelsD;
+
+    testFeaturesD = Fix_to_Double_F(testing_Features);
+    testLabelsD = Fix_to_Double_L(testing_Labels);
+
+    
+
     // vector2d_to_RowMatrixXd(testing_Features, testX); 
 
     // ColVectorXd testY(n_);  

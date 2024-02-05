@@ -69,11 +69,13 @@ void OnlinePhase::train_batch(int iter, int indexLo){
 
     //一些中间结果辅助向量
     ColVectorXi64 D(BATCH_SIZE);
-    ColMatrixXi64 Y_(BATCH_SIZE);
+    ColVectorXi64 Y_(BATCH_SIZE);
     ColVectorXi64 Sig(BATCH_SIZE);
     ColVectorXi64 Fi_(BATCH_SIZE);
     ColVectorXi64 F_(BATCH_SIZE);
     ColVectorXi64 delta(d);
+    
+    
 
     Y_ = -i * (Eb * F) + X * F + Eb * wi + Z;
 
