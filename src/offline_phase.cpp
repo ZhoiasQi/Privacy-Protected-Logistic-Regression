@@ -300,6 +300,7 @@ void OfflineSetUp::secure_mult(int N, int D, vector<vector<uint64_t>>& a, vector
     }
 }
 
+//赋值传出需要的乘法三元组
 void OfflineSetUp::getMTs(SetupTriples *triples){
     triples->Ai = this->Ai;
     triples->Bi = this->Bi;
