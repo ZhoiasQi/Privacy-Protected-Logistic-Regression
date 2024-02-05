@@ -74,6 +74,8 @@ public:
     }
 
     void initialize(RowMatrixXi64& Xi, ColVectorXi64& Yi);
+
+    void train_batch(int iter, int indexLo);
 };
 
 #endif 
