@@ -69,8 +69,48 @@ void OnlinePhase::train_batch(int iter, int indexLo){
 
     //一些中间结果辅助向量
     ColVectorXi64 D(BATCH_SIZE);
+    ColMatrixXi64 Y_(BATCH_SIZE);
     ColVectorXi64 Sig(BATCH_SIZE);
     ColVectorXi64 Fi_(BATCH_SIZE);
     ColVectorXi64 F_(BATCH_SIZE);
     ColVectorXi64 delta(d);
+
+    Y_ = -i * (Eb * F) + X * F + Eb * wi + Z;
+
+    truncate(i, SCALING_FACTOR, Y_);
+
+    //TODO: 逻辑回归还没写
+    Sig = sigmoid(Y_);
+
+    D = Sig - Y;
+
+    Fi_ = D - V_;
+
+    if (party == ALICE){
+        send<ColVectorXi64>(io, Fi_);
+    }
+    else{
+        recv<ColVectorXi64>(io, F_);
+    }
+
+    if (party == BOB){
+        send<ColVectorXi64>(io, Fi_);
+    }
+    else{
+        recv<ColVectorXi64>(io, F_);
+    }
+
+    F_ = F_ + Fi_;
+
+    RowMatrixXi64 Xt = X.transpose();
+    RowMatrixXi64 Ebt = Eb.transpose();
+
+    delta = -i * (Ebt * F_) + Xt * F + Ebt * D + Z;
+
+    truncate<ColVectorXi64>(i, SCALING_FACTOR, delta);
+    //乘学习率，除batch_size, 即除（学习率的倒数*BATCH_SIZE）
+    truncate<ColVectorXi64>(i, alpha_inv * BATCH_SIZE, delta);
+
+    wi = wi - delta;
+
 }
