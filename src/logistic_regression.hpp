@@ -65,6 +65,7 @@ public:
 
     void train_model();
 
+    void test_model(RowMatrixXd& testing_data, ColVectorXd& testing_labels);
 };
 
 #endif

@@ -138,8 +138,6 @@ int main(int argc, char** argv){
     cout << "Testing" << endl;
     cout << "=======" << endl;
 
-    int n_;
-
     //因为前期不理解含义把所有的训练集测试集全都浮点数转定点数了，现在要把训练集的转回来
     vector<vector<double>> testFeaturesD;
     vector<double> testLabelsD;
@@ -147,13 +145,15 @@ int main(int argc, char** argv){
     testFeaturesD = Fix_to_Double_F(testing_Features);
     testLabelsD = Fix_to_Double_L(testing_Labels);
 
+    int n_= testFeaturesD.size();
     
+    RowMatrixXd testX(n_, params.d);
+    vector2d_to_RowMatrixXd(testFeaturesD, testX); 
 
-    // vector2d_to_RowMatrixXd(testing_Features, testX); 
+    ColVectorXd testY(n_);  
+    vector_to_ColVectorXd(testLabelsD, testY);  
 
-    // ColVectorXd testY(n_);  
-    // vector_to_ColVectorXd(testing_Labels, testY);  
-    // logisticRegression.test_model(testX, testY); 
+    logisticRegression.test_model(testX, testY); 
 
     return 0;
 }
