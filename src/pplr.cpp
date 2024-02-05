@@ -151,7 +151,7 @@ int main(int argc, char** argv){
     ColVectorXd testY(n_);  
     vector_to_ColVectorXd(testLabelsD, testY);  
 
-    //logisticRegression.test_model(testX, testY); 
+    logisticRegression.test_model(testX, testY); 
 
     return 0;
 }

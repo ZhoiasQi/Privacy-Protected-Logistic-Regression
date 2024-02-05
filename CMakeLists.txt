@@ -6,6 +6,12 @@ set(NAME "Privacy-Protected-Logistic-Regression")  #设置变量 NAME 的值为 Privacy
 
 set (CMAKE_CXX_STANDARD 11)  #设置 C++ 标准为 C++11
 
+set (CMAKE_BUILD_TYPE "Debug") # 设置编译类型为 Debug 模式
+
+set (CMAKE_CXX_FLAGS_DEBUG "$ENV{CXXFLAGS} -O0 -Wall -g2 -ggdb") # 设置 Debug 模式下的 C++ 编译选项，包括关闭优化（-O0）、启用所有警告（-Wall）、生成调试信息（-g2 和 -ggdb）
+
+set (CMAKE_CXX_FLAGS_RELEASE "$ENV{CXXFLAGS} -O3 -Wall") # 设置 Release 模式下的 C++ 编译选项，包括启用高级优化（-O3）和启用所有警告（-Wall）
+
 find_path(CMAKE_FOLDER NAMES cmake/emp-tool-config.cmake)  #在 CMAKE_FOLDER 中查找文件 cmake/emp-tool-config.cmake 的路径
 
 include(${CMAKE_FOLDER}/cmake/common.cmake)  #包含 cmake/common.cmake 文件
