@@ -49,6 +49,28 @@ void OnlinePhase::train_batch(int iter, int indexLo){
     ColVectorXi64 Z = Zi.col(iter); // 取 Zi 中第 iter 列作为向量 Z
     ColVectorXi64 Z_ = Zi_.col(iter); // 取 Zi_ 中第 iter 列作为向量 Z_
 
-    
+    Fi = wi - V;
 
+    if(party == ALICE){
+        send<ColVectorXi64>(io, Fi);
+    }
+    else{
+        recv<ColVectorXi64>(io, F);
+    }
+
+    if(party == BOB){
+        send<ColVectorXi64>(io, Fi);
+    }
+    else{
+        recv<ColVectorXi64>(io, F);
+    }
+
+    F = F + Fi;
+
+    //一些中间结果辅助向量
+    ColVectorXi64 D(BATCH_SIZE);
+    ColVectorXi64 Sig(BATCH_SIZE);
+    ColVectorXi64 Fi_(BATCH_SIZE);
+    ColVectorXi64 F_(BATCH_SIZE);
+    ColVectorXi64 delta(d);
 }

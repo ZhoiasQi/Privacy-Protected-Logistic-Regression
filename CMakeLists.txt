@@ -28,6 +28,7 @@ add_executable(PPLR
     src/offline_phase.cpp 
     src/online_phase.cpp
     src/util.cpp
+    src/sigmoid.cpp
 )
 
 target_link_libraries(PPLR ${EMP-OT_LIBRARIES} Eigen3::Eigen)

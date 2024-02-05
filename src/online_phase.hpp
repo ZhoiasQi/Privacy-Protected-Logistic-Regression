@@ -3,6 +3,7 @@
 
 #include <math.h>
 #include "util.hpp"
+#include "sigmoid.hpp"
 
 using namespace emp;
 

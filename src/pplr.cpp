@@ -140,7 +140,7 @@ int main(int argc, char** argv){
 
     // int n_;
 
-    // RowMatrixXd testX(n_, params.d);  // 定义测试数据矩阵
+    // RowMatrixXd testX(n_, params.d);  
     // vector2d_to_RowMatrixXd(testing_Features, testX); 
 
     // ColVectorXd testY(n_);  
