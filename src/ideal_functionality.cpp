@@ -192,6 +192,9 @@ int main(int argc, char** argv){
 
     int n_;
 
+    n_ = testing_Labels.size();
+    cout << "Number of Instances: " << n_ << endl;
+
     RowMatrixXd testX(n_, params.d);
     vector2d_to_RowMatrixXd(testing_Features, testX);
 
