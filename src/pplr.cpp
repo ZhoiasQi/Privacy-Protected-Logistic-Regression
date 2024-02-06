@@ -64,7 +64,7 @@ int main(int argc, char** argv){
     vector<uint64_t> testing_Labels;
 
     // 修改计算训练集的大小为128*3
-    size_t trainingSize = 128 * 3;
+    size_t trainingSize = BATCH_SIZE * 3;
 
     // 根据计算结果划分数据到训练集和测试集
     training_Features.assign(uint64_dataFeatures.begin(), uint64_dataFeatures.begin() + trainingSize);

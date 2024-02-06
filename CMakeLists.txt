@@ -40,6 +40,7 @@ add_executable(PPLR
 add_executable(ideal_functionality
     src/ideal_functionality.cpp 
     src/read_WBDC.cpp
+    src/util.cpp
 )
 
 target_link_libraries(PPLR ${EMP-OT_LIBRARIES} Eigen3::Eigen)
