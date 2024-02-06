@@ -37,4 +37,11 @@ add_executable(PPLR
     src/sigmoid.cpp
 )
 
+add_executable(ideal_functionality
+    src/ideal_functionality.cpp 
+    src/read_WBDC.cpp
+)
+
 target_link_libraries(PPLR ${EMP-OT_LIBRARIES} Eigen3::Eigen)
+
+target_link_libraries(ideal_functionality ${EMP-OT_LIBRARIES} Eigen3::Eigen)

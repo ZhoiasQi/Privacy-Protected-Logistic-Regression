@@ -77,7 +77,7 @@ void OnlinePhase::train_batch(int iter, int indexLo){
 
     Y_ = -i * (Eb * F) + X * F + Eb * wi + Z;
 
-    truncate(i, SCALING_FACTOR, Y_);
+    truncate<ColVectorXi64>(i, SCALING_FACTOR, Y_);
 
     //TODO: 逻辑回归还没写
     Sig = sigmoid(Y_);
@@ -105,7 +105,7 @@ void OnlinePhase::train_batch(int iter, int indexLo){
     RowMatrixXi64 Xt = X.transpose();
     RowMatrixXi64 Ebt = Eb.transpose();
 
-    delta = -i * (Ebt * F_) + Xt * F + Ebt * D + Z;
+    delta = -i * (Ebt * F_) + Xt * F_ + Ebt * D + Z_;
 
     truncate<ColVectorXi64>(i, SCALING_FACTOR, delta);
     //乘学习率，除batch_size, 即除（学习率的倒数*BATCH_SIZE）

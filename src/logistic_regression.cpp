@@ -29,6 +29,9 @@ void LogisticRegression::train_model(){
     w += online->wi;
 
     descale<ColVectorXi64, ColVectorXd>(w, w_d);
+
+    cout << w << endl;
+    cout << w_d << endl;
 }
 
 void LogisticRegression::test_model(RowMatrixXd& testing_data, ColVectorXd& testing_labels){
