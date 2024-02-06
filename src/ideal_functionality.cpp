@@ -64,14 +64,24 @@ public:
         for (int i = 0; i < t; i++){
             int indexLo = (i * BATCH_SIZE) % n;
             train_batch(i, indexLo);
+            //cout << "t = " << i << endl << w[0] << endl;
         }
     }
 
     void test_model(RowMatrixXd& testing_data, ColVectorXd& testing_labels){
+        // cout << "testsize=" << testing_data.rows() << endl;
+        // cout << "features=" << testing_data.cols() << endl;
+        // cout << "w :" << endl << w << endl;
+        
         ColVectorXd prediction;
+    
         prediction = testing_data * w;
 
+        //cout << "prediction : " << endl << prediction << endl;
+
         int n_ = prediction.size();
+
+        //cout << "n = " << n_ << endl;
 
         for(int i = 0; i < n_; i++){
             int temp = 1 / (1 + exp(-prediction(i)));
@@ -80,6 +90,8 @@ public:
 
         int num_correct = 0;
         for (int i = 0; i < n_; i++){
+            //cout << prediction[i] << "   " << testing_labels[i] << endl;
+
             if(testing_labels[i] == 1){
                 if(prediction[i] >= 0.5){
                     num_correct++;
@@ -120,7 +132,7 @@ int main(int argc, char** argv){
     vector<double> training_Labels;
     vector<double> testing_Labels;
 
-    size_t trainingSize = BATCH_SIZE * 3;
+    size_t trainingSize = BATCH_SIZE * 12;
     
     training_Features.assign(dataFeatures.begin(), dataFeatures.begin() + trainingSize);
     testing_Features.assign(dataFeatures.begin() + trainingSize, dataFeatures.end());
@@ -183,6 +195,16 @@ int main(int argc, char** argv){
     ColVectorXd Y(params.n);
     vector_to_ColVectorXd(training_Labels, Y);
 
+
+    // vector<vector<double>> a = {{10,2},{11,4},{-2,10},{-3,13}};
+    // vector<double> b = {1, 1, 0, 0};
+    
+    // RowMatrixXd X(4,2);
+    // ColVectorXd Y(4);
+    // vector2d_to_RowMatrixXd(a, X);
+    // vector_to_ColVectorXd(b, Y);
+
+
     LogisticRegression logisticRegression(X, Y, params);
 
     //≤‚ ‘
@@ -205,3 +227,4 @@ int main(int argc, char** argv){
 
     return 0;
 }
+

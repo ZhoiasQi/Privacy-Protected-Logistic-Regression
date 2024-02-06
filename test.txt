@@ -1,0 +1,16 @@
+cd build
+cmake ..
+make 
+cd bin
+./ideal_functionality 1
+./ideal_functionality 2
+./ideal_functionality 3
+./ideal_functionality 4
+./ideal_functionality 5
+./ideal_functionality 6
+./ideal_functionality 7
+./ideal_functionality 8
+./ideal_functionality 9
+./ideal_functionality 10
+cd ..
+cd ..
