@@ -52,11 +52,12 @@ make
 ```
 
 ### **Execution**
-```
-cd bin
-//打开两个终端分别各自执行下面的两份命令
-//第一个
-./PPLR 1 8000 [num_iter] 
-//第二个
-./PPLR 2 8000 [num_iter]
-```
+*下面两个程序分别用来测试直接使用逻辑回归理想情况下的训练准确率和支持隐私保护的逻辑回归算法的训练准确率用来比较*
+* `ideal_functionality`
+  - `./build/bin/ideal_functionality [num_iter]`
+- `secure_ML`
+  - On local machine
+    - 在第一个终端输入
+        - `./build/bin/PPLR 1 8000 [num_iter]` 
+    - 在第二个终端输入
+        - `./build/bin/PPLR 2 8000 [num_iter]`
