@@ -38,7 +38,16 @@ void LogisticRegression::test_model(RowMatrixXd& testing_data, ColVectorXd& test
     int n_ = prediction.size();
 
     for(int i = 0; i < n_; i++){
-        int temp = 1 / (1 + pow(M_E, -prediction[i]));
+        double temp;
+        if(prediction[i] >= 1){
+            temp = 1.0;
+        }
+        else if(prediction[i] >= -1 && prediction[i] < 1){
+            temp = prediction[i] + 0.5;
+        }
+        else{
+            temp = 0;
+        }
         prediction[i] = temp;
     }
 

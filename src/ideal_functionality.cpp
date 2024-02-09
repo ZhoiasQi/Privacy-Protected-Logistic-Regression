@@ -1,4 +1,4 @@
-//用来测试本地直接进行逻辑回归训练的结果，看看和安全逻辑回归的区别。
+//用来测试本地直接进行明文逻辑回归训练的结果，看看和安全逻辑回归的区别。
 
 #include "read_WBDC.hpp"
 #include "util.hpp"
@@ -30,9 +30,17 @@ public:
         X = training_data;
         Y = training_labels;
         w.resize(d);
-        for(int i = 0; i < d; i++)
+        for(int i = 0; i < d; i++){
             w[i] = 0;
+        }
         train_model();
+    }
+
+    double sigmoid(double x){
+        double expNum = exp(-x);
+        double denominator = 1 + expNum;
+        double res = 1 / denominator;
+        return res;
     }
 
     void train_batch(int iter, int indexLo){
@@ -47,7 +55,7 @@ public:
         Y_ = Xb * w;
 
         for (int i = 0; i < BATCH_SIZE; i++) {
-            Sig(i) = 1 / (1 + exp(-Y_(i)));
+            Sig(i) = sigmoid(Y_(i));
         }
 
         D = Sig - Yb;
@@ -64,7 +72,7 @@ public:
         for (int i = 0; i < t; i++){
             int indexLo = (i * BATCH_SIZE) % n;
             train_batch(i, indexLo);
-            //cout << "t = " << i << endl << w[0] << endl;
+            //cout << "t = " << i << endl << w << endl;
         }
     }
 
@@ -84,9 +92,12 @@ public:
         //cout << "n = " << n_ << endl;
 
         for(int i = 0; i < n_; i++){
-            int temp = 1 / (1 + exp(-prediction(i)));
+            //cout << prediction(i) << "   ";
+            double temp = 1 / (1 + exp(-prediction(i)));
+            //cout << temp << "   ";
             prediction[i] = temp;
         }
+        cout << endl;
 
         int num_correct = 0;
         for (int i = 0; i < n_; i++){
@@ -109,6 +120,8 @@ public:
     }
 };
 
+void shuffleData(vector<vector<double>>& dataFeatures, vector<double>& dataLabels);
+
 int main(int argc, char** argv){
 
     //读参数
@@ -126,13 +139,16 @@ int main(int argc, char** argv){
     dataFeatures = reverse_BreastCancerInstance_to_features(dataSet);
     dataLabels = reverse_BreastCancerInstance_to_labels(dataSet);
 
+    //按照相同的顺序随机打乱特征和标签
+    //shuffleData(dataFeatures, dataLabels);
+
     //划分测试集和训练集
     vector<vector<double>> training_Features;
     vector<vector<double>> testing_Features;
     vector<double> training_Labels;
     vector<double> testing_Labels;
 
-    size_t trainingSize = BATCH_SIZE * 12;
+    size_t trainingSize = BATCH_SIZE * 10;
     
     training_Features.assign(dataFeatures.begin(), dataFeatures.begin() + trainingSize);
     testing_Features.assign(dataFeatures.begin() + trainingSize, dataFeatures.end());
@@ -195,16 +211,6 @@ int main(int argc, char** argv){
     ColVectorXd Y(params.n);
     vector_to_ColVectorXd(training_Labels, Y);
 
-
-    // vector<vector<double>> a = {{10,2},{11,4},{-2,10},{-3,13}};
-    // vector<double> b = {1, 1, 0, 0};
-    
-    // RowMatrixXd X(4,2);
-    // ColVectorXd Y(4);
-    // vector2d_to_RowMatrixXd(a, X);
-    // vector_to_ColVectorXd(b, Y);
-
-
     LogisticRegression logisticRegression(X, Y, params);
 
     //测试
@@ -228,3 +234,8 @@ int main(int argc, char** argv){
     return 0;
 }
 
+void shuffleData(vector<vector<double>>& dataFeatures, vector<double>& dataLabels) {
+    unsigned seed = std::chrono::system_clock::now().time_since_epoch().count(); // 初始化随机种子
+    std::shuffle(dataFeatures.begin(), dataFeatures.end(), std::default_random_engine(seed)); // 打乱数据特征
+    std::shuffle(dataLabels.begin(), dataLabels.end(), std::default_random_engine(seed)); // 按照相同的顺序打乱数据标签
+}
