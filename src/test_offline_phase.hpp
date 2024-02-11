@@ -33,8 +33,8 @@ class TestSetUp{
 
         Ai.resize(n, d);  // 调整矩阵 Ai 的大小为n*d的矩阵，即U
         Bi.resize(d, t);  // 调整矩阵 Bi 的大小为d*t的矩阵，行为特征值个数，列为迭代次数用来训练,即V
-        Ci.resize(1, t);  // 调整矩阵 Ci 的大小，用来存ab的乘积，为辅助矩阵
-        Bi_.resize(1, t);  // 调整矩阵 Bi_ 的大小，即V'
+        Ci.resize(n, t);  // 调整矩阵 Ci 的大小，用来存ab的乘积，为辅助矩阵
+        Bi_.resize(n, t);  // 调整矩阵 Bi_ 的大小，即V'
         Ci_.resize(d, t);  // 调整矩阵 Ci_ 的大小，用来存UbT和V'的乘积，为辅助矩阵
 
         initialize_matrices();  // 初始化矩阵

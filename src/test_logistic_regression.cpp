@@ -7,7 +7,7 @@ void TestLogisticRegression::getW(ColVectorXi64 w){
 void TestLogisticRegression::test_model(){
 
     for(int i = 0; i < t; i++){
-        int indexLo = (i * 1) % n;  
+        int indexLo = (i * n) % n;  
         online->test_model(i, indexLo);
     }
 

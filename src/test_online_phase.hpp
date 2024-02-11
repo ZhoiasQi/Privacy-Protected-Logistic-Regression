@@ -52,8 +52,8 @@ public:
         F.resize(d);
         wi.resize(d);
         Vi.resize(d, t);
-        Zi.resize(1, t);
-        Vi_.resize(1, t);
+        Zi.resize(n, t);
+        Vi_.resize(n, t);
         Zi_.resize(d, t);
     }
 

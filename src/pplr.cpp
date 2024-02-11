@@ -147,7 +147,7 @@ int main(int argc, char** argv){
     if(PARTY == ALICE){
         w = trainModel.w;
         cout << "Alice has already got the model w" << endl;
-        cout << "w : " << endl << w << endl;
+        //cout << "w : " << endl << w << endl;
     }
 
     /****************************²âÊÔ**************************************/

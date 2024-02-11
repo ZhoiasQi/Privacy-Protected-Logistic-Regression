@@ -12,7 +12,7 @@ using namespace std;
 void TestSetUp::initialize_matrices(){
     prg.random_data(Ai.data(), n * d * 8); // 随机生成 Ai 数据，对应论文中的U矩阵，指代x
     prg.random_data(Bi.data(), d * t * 8); // 随机生成 Bi 数据，对应论文中的V矩阵，每一列指代一个w在一次迭代中的值
-    prg.random_data(Bi_.data(), 1 * t * 8); // 随机生成 Bi_ 数据，对应论文中的V'，每一列指代Y*-Y在一次迭代中的值
+    prg.random_data(Bi_.data(), n * t * 8); // 随机生成 Bi_ 数据，对应论文中的V'，每一列指代Y*-Y在一次迭代中的值
 }
 
 /**
@@ -20,23 +20,23 @@ void TestSetUp::initialize_matrices(){
  *  最后得到两个Z矩阵，形成需要的乘法三元组 
  */
 void TestSetUp::generateMTs(){
-    vector<vector<uint64_t>> ci(t, vector<uint64_t>(1)); 
+    vector<vector<uint64_t>> ci(t, vector<uint64_t>(n)); 
     vector<vector<uint64_t>> ci_(t, vector<uint64_t>(d)); 
 
     for(int i = 0; i < t; i++){
-        RowMatrixXi64 Ai_b = Ai.block(i * 1, 0, 1, d); // 截取 Ai 的子矩阵 Ai_b
-        vector<vector<uint64_t>> ai(1, vector<uint64_t>(d)); 
+        RowMatrixXi64 Ai_b = Ai.block(i * n, 0, n, d); // 截取 Ai 的子矩阵 Ai_b
+        vector<vector<uint64_t>> ai(n, vector<uint64_t>(d)); 
         RowMatrixXi64_to_vector2d(Ai_b, ai); // 将库形式的 Ai_b 转换为二维 vector ai
 
         RowMatrixXi64 Ai_bt = Ai_b.transpose(); // Ai_b 的转置矩阵
-        vector<vector<uint64_t>> ai_t(d, vector<uint64_t>(1));
+        vector<vector<uint64_t>> ai_t(d, vector<uint64_t>(n));
         RowMatrixXi64_to_vector2d(Ai_bt, ai_t); // 将 Ai_bt 转换为二维 vector
 
         vector<uint64_t> bi = ColVectorXi64_to_vector(Bi.col(i)); // 获取 Bi 的列向量，并转换为 vector
         vector<uint64_t> bi_ = ColVectorXi64_to_vector(Bi_.col(i)); // 获取 Bi_ 的列向量，并转换为 vector
 
-        secure_mult(1, d, ai, bi, ci[i]); // 执行安全乘法操作，得到 ci[i]
-        secure_mult(d, 1, ai_t, bi_, ci_[i]); // 执行安全乘法操作，得到 ci_[i]
+        secure_mult(n, d, ai, bi, ci[i]); // 执行安全乘法操作，得到 ci[i]
+        secure_mult(d, n, ai_t, bi_, ci_[i]); // 执行安全乘法操作，得到 ci_[i]
     }
 
     vector2d_to_ColMatrixXi64(ci, Ci); // 将 ci 转换为 ColMatrixXi64 类型的矩阵 Ci
