@@ -48,7 +48,7 @@ int main(int argc, char** argv){
 
     dataFeatures = reverse_BreastCancerInstance_to_features(dataSet);
     dataLabels = reverse_BreastCancerInstance_to_labels(dataSet);
-
+    
     /****************************对数据进行前期预处理**************************************/
     //浮点数转定点数
     vector<vector<uint64_t>> uint64_dataFeatures;
@@ -111,9 +111,19 @@ int main(int argc, char** argv){
     }
     
     /****************************训练**************************************/
+    cout << endl;
     cout << "========" << endl;
     cout << "Training" << endl;
     cout << "========" << endl;
+
+    cout << "Model Explanation: " << endl 
+        << "Alice has all the data, but does not have enough arithmetic power to build the model," << endl
+        <<  "so she use the auxiliary server Bob together to build the model, " << endl 
+        << "and finally only Alice can get the machine learning model." << endl;
+
+    cout << "========" << endl;
+
+    cout << "Output: " << endl;
 
     //转成调用Eigen库的形式便于后续处理
     TrainingParams params;
@@ -129,12 +139,23 @@ int main(int argc, char** argv){
     vector2d_to_RowMatrixXi64(training_Features, X);
     vector_to_ColVectorXi64(training_Labels, Y);
 
-    LogisticRegression logisticRegression(X, Y, params, io);
+    LogisticRegression trainModel(X, Y, params, io);
 
     /****************************测试**************************************/
+    cout << endl;
     cout << "=======" << endl;
     cout << "Testing" << endl;
     cout << "=======" << endl;
+
+    cout << "Model Explanation: " << endl 
+        << "Alice has already obtained the model w in the training phase above, " << endl
+        << "and Carol needs to use Alice's model for testing. " << endl
+        << "But Alice doesn't want to reveal her model, and Carol doesn't want to reveal her data." << endl
+        << "For the sake of code, since Bob is no longer needed, we continue to use terminal 2 as Cindy for testing." << endl;
+
+    cout << "=======" << endl;
+
+    cout << "Output: " << endl;
 
     //因为前期不理解含义把所有的训练集测试集全都浮点数转定点数了，现在要把训练集的转回来
     vector<vector<double>> testFeaturesD;
@@ -153,7 +174,12 @@ int main(int argc, char** argv){
     ColVectorXd testY(n_);  
     vector_to_ColVectorXd(testLabelsD, testY);  
 
-    logisticRegression.test_model(testX, testY); 
+    TestingParams t_parms;
+
+    t_parms.n = n_;
+    t_parms.d = params.d;
+
+    LogisticRegression testModel(X, Y, params, io, "test");
 
     return 0;
 }

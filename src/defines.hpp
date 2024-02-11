@@ -6,7 +6,9 @@
 #define BATCH_SIZE 32 // 定义批处理大小为 128,暂时改成16试试
 #define BITLEN 64  // 定义位长度为 64
 #define LEARNING_RATE_INV 256  // 定义学习率的倒数（1/LEARNING_RATE）
-#define DEBUG 1  // 定义调试模式开关（1 为开启，0 为关闭）
+#define DEBUG 0  // 定义调试模式开关（1 为开启，0 为关闭）
+
+#define CAROL 2 //在测试阶段让carol作为终端2的主体
 
 #define SCALING_FACTOR 8192  // 缩放因子，用于数据的缩放（精度为 13 位）
 

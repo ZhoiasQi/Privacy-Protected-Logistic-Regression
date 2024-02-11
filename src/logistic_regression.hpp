@@ -4,6 +4,7 @@
 #include "offline_phase.hpp"
 #include "online_phase.hpp"
 #include <iostream>
+#include <string>
 
 using namespace std;
 
@@ -19,6 +20,7 @@ public:
     OfflineSetUp* setup;  // 设置阶段对象指针
     OnlinePhase* online;  // 在线阶段对象指针
 
+    //训练阶段构造函数
     LogisticRegression(RowMatrixXi64& training_data, ColVectorXi64& training_labels, TrainingParams params, emp::NetIO* io) {
         this->n = params.n;  // 设置训练数据大小
         this->d = params.d;  // 设置特征数
@@ -51,15 +53,25 @@ public:
             rY *= -1;  // 对 rY 中的元素取反
             send<RowMatrixXi64>(io, rX);  // 发送随机数据 rX
             send<ColVectorXi64>(io, rY);  // 发送随机数据 rY
+
+            cout << "Alice has secretly sent the data to Bob" << endl;
         } else {  // 如果当前参与方是BOB
             recv<RowMatrixXi64>(io, Xi);  // 从对方接收加密后的训练数据
             recv<ColVectorXi64>(io, Yi);  // 从对方接收加密后的训练标签
+
+            cout << "Bob has received the secret data from Alice" << endl;
         }
 
         this->online = new OnlinePhase(params, io, &triples);  // 创建在线阶段对象
         online->initialize(Xi, Yi);  // 在在线阶段初始化
 
         train_model();
+
+    }
+
+    //测试阶段构造函数
+    LogisticRegression(RowMatrixXi64& testing_data, ColVectorXi64& testing_labels, TrainingParams params, emp::NetIO* io, string str) {
+        this->n = 
 
     }
 

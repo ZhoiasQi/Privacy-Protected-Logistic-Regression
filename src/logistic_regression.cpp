@@ -14,21 +14,29 @@ void LogisticRegression::train_model(){
 
     if (party == BOB){
         send<ColVectorXi64>(io, online->wi);
-    }
-    else{
-        recv<ColVectorXi64>(io, w);
-    }
         
-    if (party == ALICE){
-        send<ColVectorXi64>(io, online->wi);
+        cout << "Bob has already sent wi to Alice" << endl;
     }
     else{
         recv<ColVectorXi64>(io, w);
+
+        cout << "Alice has already got wi from Bob" << endl;
     }
 
-    w += online->wi;
+    // if (party == ALICE){
+    //     send<ColVectorXi64>(io, online->wi);
+    // }
+    // else{
+    //     recv<ColVectorXi64>(io, w);
+    // }
 
-    descale<ColVectorXi64, ColVectorXd>(w, w_d);
+    if(party == ALICE){
+        w += online->wi;
+
+        cout << "Alice has already got the model w" << endl;
+    }
+    
+    //descale<ColVectorXi64, ColVectorXd>(w, w_d);
 }
 
 void LogisticRegression::test_model(RowMatrixXd& testing_data, ColVectorXd& testing_labels){

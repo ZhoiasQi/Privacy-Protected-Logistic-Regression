@@ -97,7 +97,7 @@ public:
             //cout << temp << "   ";
             prediction[i] = temp;
         }
-        cout << endl;
+        //cout << endl;
 
         int num_correct = 0;
         for (int i = 0; i < n_; i++){

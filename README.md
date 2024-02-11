@@ -4,7 +4,7 @@
 
 # **Build**
 
-*We use C++ to develop this project, and this work should work on Ubuntu.*
+*本课题使用了C++来构建项目，并且此项目需要在Ubuntu上运行。*
 
 ### **Preparation**
 
