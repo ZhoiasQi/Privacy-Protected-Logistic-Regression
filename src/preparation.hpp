@@ -7,6 +7,7 @@
 #include <vector>
 #include <iomanip>
 #include "logistic_regression.hpp"
+#include "test_logistic_regression.hpp"
 
 using namespace std;
 

@@ -141,6 +141,15 @@ int main(int argc, char** argv){
 
     LogisticRegression trainModel(X, Y, params, io);
 
+    ColVectorXi64 w;
+    w.resize(params.d);
+    
+    if(PARTY == ALICE){
+        w = trainModel.w;
+        cout << "Alice has already got the model w" << endl;
+        cout << "w : " << endl << w << endl;
+    }
+
     /****************************测试**************************************/
     cout << endl;
     cout << "=======" << endl;
@@ -151,35 +160,39 @@ int main(int argc, char** argv){
         << "Alice has already obtained the model w in the training phase above, " << endl
         << "and Carol needs to use Alice's model for testing. " << endl
         << "But Alice doesn't want to reveal her model, and Carol doesn't want to reveal her data." << endl
-        << "For the sake of code, since Bob is no longer needed, we continue to use terminal 2 as Cindy for testing." << endl;
+        << "For the sake of code, since Bob is no longer needed, we continue to use terminal 2 as Carol for testing." << endl;
 
     cout << "=======" << endl;
 
     cout << "Output: " << endl;
 
-    //因为前期不理解含义把所有的训练集测试集全都浮点数转定点数了，现在要把训练集的转回来
-    vector<vector<double>> testFeaturesD;
-    vector<double> testLabelsD;
+    int n_= testing_Features.size();
 
-    testFeaturesD = Fix_to_Double_F(testing_Features);
-    testLabelsD = Fix_to_Double_L(testing_Labels);
+    TestingParams t_params;
 
-    int n_= testFeaturesD.size();
+    t_params.n = n_;
+    t_params.d = params.d;
 
-    cout << "Number of Instances: " << n_ << endl;
+    cout << "Number of Instances: " << t_params.n << endl;
     
-    RowMatrixXd testX(n_, params.d);
-    vector2d_to_RowMatrixXd(testFeaturesD, testX); 
+    RowMatrixXi64 testX(t_params.n, t_params.d);
+    vector2d_to_RowMatrixXi64(testing_Features, testX); 
 
-    ColVectorXd testY(n_);  
-    vector_to_ColVectorXd(testLabelsD, testY);  
+    ColVectorXi64 testY(t_params.n);  
+    vector_to_ColVectorXi64(testing_Labels, testY);  
 
-    TestingParams t_parms;
+    TestLogisticRegression testModel(X, Y, t_params, io);
 
-    t_parms.n = n_;
-    t_parms.d = params.d;
+    if(PARTY == ALICE){
+        testModel.getW(w);
+    }
+    else{
+        for(int i = 0; i < testModel.w.size(); i++){
+            w[i] = 0;
+        }
+    }
 
-    LogisticRegression testModel(X, Y, params, io, "test");
+    testModel.test_model();
 
     return 0;
 }

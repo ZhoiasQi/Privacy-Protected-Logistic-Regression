@@ -4,7 +4,6 @@
 #include "offline_phase.hpp"
 #include "online_phase.hpp"
 #include <iostream>
-#include <string>
 
 using namespace std;
 
@@ -30,7 +29,7 @@ public:
         this->io = io;  // 设置网络输入输出对象指针
         this->party = PARTY;  // 设置当前参与方（ALICE或BOB）
         this->w.resize(d);  // 调整权重向量大小
-        this->w_d.resize(d);  // 调整权重向量大小
+        //this->w_d.resize(d);  // 调整权重向量大小
 
         this->setup = new OfflineSetUp(n, d, t, io);
         setup->generateMTs();  // 生成随机三元组
@@ -66,12 +65,6 @@ public:
         online->initialize(Xi, Yi);  // 在在线阶段初始化
 
         train_model();
-
-    }
-
-    //测试阶段构造函数
-    LogisticRegression(RowMatrixXi64& testing_data, ColVectorXi64& testing_labels, TrainingParams params, emp::NetIO* io, string str) {
-        this->n = 
 
     }
 

@@ -35,6 +35,9 @@ add_executable(PPLR
     src/online_phase.cpp
     src/util.cpp
     src/sigmoid.cpp
+    src/test_logistic_regression.cpp
+    src/test_offline_phase.cpp
+    src/test_online_phase.cpp
 )
 
 add_executable(ideal_functionality

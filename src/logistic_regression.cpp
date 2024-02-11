@@ -32,8 +32,6 @@ void LogisticRegression::train_model(){
 
     if(party == ALICE){
         w += online->wi;
-
-        cout << "Alice has already got the model w" << endl;
     }
     
     //descale<ColVectorXi64, ColVectorXd>(w, w_d);
