@@ -22,17 +22,6 @@ void LogisticRegression::train_model(){
 
         cout << "Alice has already got wi from Bob" << endl;
     }
-
-    // if (party == ALICE){
-    //     send<ColVectorXi64>(io, online->wi);
-    // }
-    // else{
-    //     recv<ColVectorXi64>(io, w);
-    // }
-
-    if(party == ALICE){
-        w += online->wi;
-    }
     
     //descale<ColVectorXi64, ColVectorXd>(w, w_d);
 }

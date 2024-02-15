@@ -31,7 +31,7 @@ public:
     emp::NetIO* io;
     emp::PRG prg;
     RowMatrixXi64 Xi, Ui, E, Ei;
-    ColVectorXi64 Yi, F, Fi, prediction_i;
+    ColVectorXi64 wi, F, Fi, prediction_i;
     ColMatrixXi64 Vi, Zi, Vi_, Zi_;
 
     TestOnlinePhase(TestingParams params, emp::NetIO* io, SetupTriples* triples) {
@@ -47,17 +47,15 @@ public:
         Ui.resize(n, d);
         E.resize(n, d);
         Ei.resize(n, d);
-        Yi.resize(n);
+        wi.resize(d);
         Fi.resize(d);
         F.resize(d);
         prediction_i.resize(d);
         Vi.resize(d, t);
         Zi.resize(n, t);
-        Vi_.resize(n, t);
-        Zi_.resize(d, t);
     }
 
-    void initialize(RowMatrixXi64& Xi, ColVectorXi64& Yi);
+    void initialize(RowMatrixXi64& Xi, ColVectorXi64& wi);
 
     void test_model(int iter, int indexLo);
 

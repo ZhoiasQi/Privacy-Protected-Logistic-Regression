@@ -6,7 +6,7 @@ void TestLogisticRegression::getW(ColVectorXi64 w){
 
 void TestLogisticRegression::secret_share_w(){
     
-    if (party == ALICE) {  // 如果当前参与方是ALICE
+    if (party == ALICE) {  
         emp::PRG prg;  // 伪随机数生成器对象
         ColVectorXi64 rW(w.rows(), w.cols());  // 随机标签向量
         prg.random_data(rW.data(), w.rows() * w.cols() * sizeof(uint64_t));  // 生成随机数据 rW
@@ -14,17 +14,22 @@ void TestLogisticRegression::secret_share_w(){
         rW *= -1;
         send<ColVectorXi64>(io, rW);  // 发送随机数据 rY
 
-        cout << "Alice has secretly sent the model w to Carol" << endl;
+        cout << "Alice has secretly sent the secret model w to Carol" << endl;
     } 
-    else {  // 如果当前参与方是Alice
+    else {  
+
         recv<ColVectorXi64>(io, wi);  // 从对方接收加密后的训练标签
 
-        cout << "Carol has received the secret data from Alice" << endl;
+        cout << "Carol has received the secret model w from Alice" << endl;
 
     }
 }
 
 void TestLogisticRegression::test_model(){
+    
+    this->online = new TestOnlinePhase(params, io, &triples);
+
+    this->online->initialize(this->Xi, this->wi);
 
     for(int i = 0; i < t; i++){
         int indexLo = (i * n) % n;  
@@ -35,15 +40,22 @@ void TestLogisticRegression::test_model(){
         send<ColVectorXi64>(io, online->prediction_i);
         
         cout << "Alice has already sent prediction_i to Carol" << endl;
+        //cout << online->prediction_i.size() << endl;
     }
     else{
-        recv<ColVectorXi64>(io, w);
+        recv<ColVectorXi64>(io, prediction);
 
         cout << "Carol has already got prediction_i from Alice" << endl;
+        //cout << prediction.size() << endl;
     }
 
     if(party == CAROL){
-        prediction += online->prediction_i;
+
+        //cout << online->prediction_i.size() << endl;
+
+        //cout << prediction.size() << endl;
+
+        prediction = online->prediction_i + prediction;
 
         int n_ = prediction.size();
 

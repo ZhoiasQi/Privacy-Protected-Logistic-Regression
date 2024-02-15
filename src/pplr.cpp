@@ -181,7 +181,7 @@ int main(int argc, char** argv){
     ColVectorXi64 testY(t_params.n);  
     vector_to_ColVectorXi64(testing_Labels, testY);  
 
-    TestLogisticRegression testModel(X, Y, t_params, io);
+    TestLogisticRegression testModel(testX, testY, t_params, io);
 
     if(PARTY == ALICE){
         testModel.getW(w);

@@ -11,6 +11,7 @@
 #define CAROL 2 //在测试阶段让carol作为终端2的主体
 
 #define SCALING_FACTOR 8192  // 缩放因子，用于数据的缩放（精度为 13 位）
+#define HALF_OF_ONE 4096
 
 extern int PARTY;  // 声明一个全局变量 PARTY（表示派对编号）
 
