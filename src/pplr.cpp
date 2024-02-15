@@ -192,6 +192,8 @@ int main(int argc, char** argv){
         }
     }
 
+    testModel.secret_share_w();
+
     testModel.test_model();
 
     return 0;

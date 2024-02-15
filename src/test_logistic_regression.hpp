@@ -15,7 +15,8 @@ public:
     RowMatrixXi64 X;  // 训练数据矩阵
     ColVectorXi64 Y;  // 训练标签向量
     ColVectorXi64 w;  // 权重向量（整数类型）
-    ColVectorXd prediction;
+    ColVectorXi64 wi;
+    ColVectorXi64 prediction;
     TestSetUp* setup;
     TestOnlinePhase* online;  // 在线阶段对象指针
 
@@ -29,6 +30,7 @@ public:
         this->io = io;
         this->party = PARTY;
         this->w.resize(d);
+        this->wi.resize(d);
         this->prediction.resize(d);
         
         this->setup = new TestSetUp(n, d, t, io);
@@ -64,6 +66,8 @@ public:
     }
 
     void getW(ColVectorXi64 w);
+
+    void secret_share_w();
 
     void test_model();
 };

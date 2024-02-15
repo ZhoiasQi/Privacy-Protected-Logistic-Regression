@@ -5,7 +5,7 @@ void TestOnlinePhase::initialize(RowMatrixXi64& Xi, ColVectorXi64& Yi){
     this->Yi = Yi;
     
     for(int i = 0; i < d; i++){
-        wi(i) = 0;
+        prediction_i(i) = 0;
     }
 
     Ui = triples->Ai;
@@ -42,17 +42,17 @@ void TestOnlinePhase::test_model(int iter, int indexLo){
     ColVectorXi64 V = Vi.col(iter); // 取 Vi 中第 iter 列作为向量 V
     ColVectorXi64 V_ = Vi_.col(iter); // 取 Vi_ 中第 iter 列作为向量 V_
     ColVectorXi64 Z = Zi.col(iter); // 取 Zi 中第 iter 列作为向量 Z
-    ColVectorXi64 Z_ = Zi_.col(iter); // 取 Zi_ 中第 iter 列作为向量 Z_
+    ColVectorXi64 Z_ = Zi_.col(iter); // 取 Zi_ 中第 iter 列作为向量 Z_、
 
-    Fi = wi - V;
+    Fi = prediction_i - V;
 
     //一些中间结果辅助向量
-    ColVectorXi64 D(n);
+    // ColVectorXi64 D(n);
     ColVectorXi64 Y_(n);
-    ColVectorXi64 Sig(n);
-    ColVectorXi64 Fi_(n);
-    ColVectorXi64 F_(n);
-    ColVectorXi64 delta(d);
+    // ColVectorXi64 Sig(n);
+    // ColVectorXi64 Fi_(n);
+    // ColVectorXi64 F_(n);
+    // ColVectorXi64 delta(d);
 
     if(party == ALICE){
         send<ColVectorXi64>(io, Fi);
@@ -70,42 +70,44 @@ void TestOnlinePhase::test_model(int iter, int indexLo){
 
     F = F + Fi;
 
-    Y_ = -i * (Eb * F) + X * F + Eb * wi + Z;
+    Y_ = -i * (Eb * F) + X * F + Eb * prediction_i + Z;
 
-    truncate<ColVectorXi64>(i, SCALING_FACTOR, Y_);
+    truncateTest<ColVectorXi64>(i, SCALING_FACTOR, Y_);
 
-    //TODO: 逻辑回归还没写
-    Sig = sigmoid(Y_);
+    prediction_i = Y_;
 
-    D = Sig - Y;
+    // //TODO: 逻辑回归还没写
+    // Sig = sigmoid(Y_);
 
-    Fi_ = D - V_;
+    // D = Sig - Y;
 
-    if (party == ALICE){
-        send<ColVectorXi64>(io, Fi_);
-    }
-    else{
-        recv<ColVectorXi64>(io, F_);
-    }
+    // Fi_ = D - V_;
 
-    if (party == BOB){
-        send<ColVectorXi64>(io, Fi_);
-    }
-    else{
-        recv<ColVectorXi64>(io, F_);
-    }
+    // if (party == ALICE){
+    //     send<ColVectorXi64>(io, Fi_);
+    // }
+    // else{
+    //     recv<ColVectorXi64>(io, F_);
+    // }
 
-    F_ = F_ + Fi_;
+    // if (party == BOB){
+    //     send<ColVectorXi64>(io, Fi_);
+    // }
+    // else{
+    //     recv<ColVectorXi64>(io, F_);
+    // }
 
-    RowMatrixXi64 Xt = X.transpose();
-    RowMatrixXi64 Ebt = Eb.transpose();
+    // F_ = F_ + Fi_;
 
-    delta = -i * (Ebt * F_) + Xt * F_ + Ebt * D + Z_;
+    // RowMatrixXi64 Xt = X.transpose();
+    // RowMatrixXi64 Ebt = Eb.transpose();
 
-    truncate<ColVectorXi64>(i, SCALING_FACTOR, delta);
-    //乘学习率，除batch_size, 即除（学习率的倒数*BATCH_SIZE）
-    truncate<ColVectorXi64>(i, alpha_inv * BATCH_SIZE, delta);
+    // delta = -i * (Ebt * F_) + Xt * F_ + Ebt * D + Z_;
 
-    wi = wi - delta;
+    // truncateTest<ColVectorXi64>(i, SCALING_FACTOR, delta);
+    // //乘学习率，除batch_size, 即除（学习率的倒数*BATCH_SIZE）
+    // truncateTest<ColVectorXi64>(i, alpha_inv * BATCH_SIZE, delta);
+
+    // prediction_i = prediction_i - delta;
     
 }
