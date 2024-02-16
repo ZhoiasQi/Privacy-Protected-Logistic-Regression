@@ -29,7 +29,7 @@ public:
         this->io = io;  // 设置网络输入输出对象指针
         this->party = PARTY;  // 设置当前参与方（ALICE或BOB）
         this->w.resize(d);  // 调整权重向量大小
-        //this->w_d.resize(d);  // 调整权重向量大小
+        this->w_d.resize(d);  // 调整权重向量大小
 
         this->setup = new OfflineSetUp(n, d, t, io);
         setup->generateMTs();  // 生成随机三元组

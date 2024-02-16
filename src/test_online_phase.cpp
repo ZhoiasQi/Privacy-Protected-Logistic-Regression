@@ -2,16 +2,16 @@
 
 using namespace std;
 
-void TestOnlinePhase::initialize(RowMatrixXi64& Xi, ColVectorXi64& Yi){
+void TestOnlinePhase::initialize(RowMatrixXi64& Xi, ColVectorXi64& Wi){
     this->Xi = Xi;
-    this->wi = Yi;
+    this->wi = Wi;
 
     Ui = triples->Ai;
+
     Ei = Xi - Ui;
 
     Vi = triples->Bi;
     Zi = triples->Ci;
-
 
     if(party == CAROL){
         send<RowMatrixXi64>(io, Ei);
@@ -43,14 +43,14 @@ void TestOnlinePhase::test_model(int iter, int indexLo){
 
     ColVectorXi64 Y_(n);
 
-    if(party == ALICE){
+    if(party == CAROL){
         send<ColVectorXi64>(io, Fi);
     }
     else{
         recv<ColVectorXi64>(io, F);
     }
 
-    if(party == CAROL){
+    if(party == ALICE){
         send<ColVectorXi64>(io, Fi);
     }
     else{

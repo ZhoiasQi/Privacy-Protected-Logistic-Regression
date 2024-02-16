@@ -174,6 +174,10 @@ int main(int argc, char** argv){
     t_params.d = params.d;
 
     cout << "Number of Instances: " << t_params.n << endl;
+
+    if(PARTY == ALICE){
+        offlineTest(testing_Features, testing_Labels, t_params, trainModel);
+    }
     
     RowMatrixXi64 testX(t_params.n, t_params.d);
     vector2d_to_RowMatrixXi64(testing_Features, testX); 

@@ -12,7 +12,8 @@ void TestLogisticRegression::secret_share_w(){
         prg.random_data(rW.data(), w.rows() * w.cols() * sizeof(uint64_t));  // 生成随机数据 rW
         wi = w + rW;
         rW *= -1;
-        send<ColVectorXi64>(io, rW);  // 发送随机数据 rY
+        send<ColVectorXi64>(io, wi);  // 发送随机数据 rY
+        wi = rW;
 
         cout << "Alice has secretly sent the secret model w to Carol" << endl;
     } 
@@ -47,35 +48,49 @@ void TestLogisticRegression::test_model(){
 
         cout << "Carol has already got prediction_i from Alice" << endl;
         //cout << prediction.size() << endl;
-    }
-
-    if(party == CAROL){
-
-        //cout << online->prediction_i.size() << endl;
-
-        //cout << prediction.size() << endl;
 
         prediction = online->prediction_i + prediction;
 
         int n_ = prediction.size();
 
+        descaleTest<ColVectorXi64, ColVectorXd>(prediction, predictionD);
+
+        for(int i = 0; i < n_; i++){
+            double temp;
+            if(predictionD[i] >= 1){
+                temp = 1.0;
+            }
+            else if(predictionD[i] >= -1 && predictionD[i] < 1){
+                temp = predictionD[i] + 0.5;
+            }
+            else{
+                temp = 0;
+            }
+            predictionD[i] = temp;
+        }
+        
+
         int num_correct = 0;
 
         for (int i = 0; i < n_; i++){
             if(Y[i] == SCALING_FACTOR){
-                if(prediction[i] >= (SCALING_FACTOR >> 1)){
+                if(predictionD[i] >= 0.5){
                     num_correct++;
+                    cout << 1 << endl;
                 }
             }
             else{
-                if(prediction[i] < (SCALING_FACTOR >> 1)){
+                if(predictionD[i] < 0.5){
                     num_correct++;
+                    cout << 0 << endl;
                 }
             }
         }
 
-    double accuracy = num_correct/((double) n_);
-    cout << "Accuracy on testing the trained model is " << accuracy * 100 << endl;
+        double accuracy = num_correct/((double) n_);
 
+        cout << "Accuracy on testing the trained model is " << accuracy * 100 << endl;
     }
+
+    
 }

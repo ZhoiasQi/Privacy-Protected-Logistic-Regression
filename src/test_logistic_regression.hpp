@@ -19,6 +19,7 @@ public:
     ColVectorXi64 wi;
     ColVectorXi64 prediction;
     ColVectorXi64 prediction_i;
+    ColVectorXd predictionD;
     TestingParams params;
     SetupTriples triples;
     TestSetUp* setup;
@@ -37,6 +38,7 @@ public:
         this->wi.resize(d);
         this->prediction.resize(n);
         this->prediction_i.resize(n);
+        this->predictionD.resize(n);
         this->params = params;
         
         this->setup = new TestSetUp(n, d, t, io);

@@ -7,6 +7,14 @@
 
 using namespace emp;
 
+template<class Derived, class OtherDerived>
+void descaleTest(Eigen::PlainObjectBase<Derived>& X, Eigen::PlainObjectBase<OtherDerived>& x) {
+    Derived signed_X = X * SCALING_FACTOR; // 矩阵X进行反缩放
+    x = (X.template cast<int64_t>()).template cast<double>(); // 将反缩放后的矩阵X转换为double类型并存储在变量x中
+    x /= SCALING_FACTOR; // 对变量x进行进一步的缩放
+    return;
+}
+
 template<class Derived>
 void truncateTest(int i, uint64_t scaling_factor, Eigen::PlainObjectBase<Derived>& X) {
     if (i == 1)
@@ -41,7 +49,13 @@ public:
         this->t = 1;
         this->io = io;
         this->triples = triples;
-        this->i = party == CAROL ? 0 : 1;
+        
+        if(party == CAROL){
+            i = 0;
+        }
+        else{
+            i = 1;
+        }
 
         Xi.resize(n, d);
         Ui.resize(n, d);
@@ -50,7 +64,7 @@ public:
         wi.resize(d);
         Fi.resize(d);
         F.resize(d);
-        prediction_i.resize(d);
+        prediction_i.resize(n);
         Vi.resize(d, t);
         Zi.resize(n, t);
     }

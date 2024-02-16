@@ -21,9 +21,13 @@ void LogisticRegression::train_model(){
         recv<ColVectorXi64>(io, w);
 
         cout << "Alice has already got wi from Bob" << endl;
+
+        w = w + online->wi;
+
+        descale<ColVectorXi64, ColVectorXd>(w, w_d);
+
     }
-    
-    //descale<ColVectorXi64, ColVectorXd>(w, w_d);
+
 }
 
 void LogisticRegression::test_model(RowMatrixXd& testing_data, ColVectorXd& testing_labels){
@@ -51,11 +55,13 @@ void LogisticRegression::test_model(RowMatrixXd& testing_data, ColVectorXd& test
         if(testing_labels[i] == 1){
             if(prediction[i] >= 0.5){
                 num_correct++;
+                cout << 1 << endl;
             }
         }
         else{
             if(prediction[i] < 0.5){
                 num_correct++;
+                cout << 0 << endl;
             }
         }
     }

@@ -110,3 +110,18 @@ vector<double> Fix_to_Double_L(vector<uint64_t> data){
 
     return res;
 }
+
+void offlineTest(vector<vector<uint64_t>> data, vector<uint64_t> label, TestingParams t_params, LogisticRegression trainModel){
+
+    auto testing_Features = Fix_to_Double_F(data);
+
+    auto testing_Labels = Fix_to_Double_L(label);
+    
+    RowMatrixXd testX(t_params.n, t_params.d);
+    vector2d_to_RowMatrixXd(testing_Features, testX); 
+
+    ColVectorXd testY(t_params.n);  
+    vector_to_ColVectorXd(testing_Labels, testY);  
+
+    trainModel.test_model(testX, testY);
+}

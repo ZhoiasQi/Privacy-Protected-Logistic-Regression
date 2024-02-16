@@ -25,7 +25,7 @@ class TestSetUp{
     TestSetUp(int n, int d, int t, NetIO* io){
         this->n = n;
         this->d = d;
-        this->t = t;
+        this->t = 1;
         this->party = PARTY;
         this->io = io;
         this->send_ot = new SHOTExtension<NetIO>(io);

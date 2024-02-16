@@ -19,4 +19,6 @@ void print_Max_Min_and_Precision(const vector<vector<double>>& training_data);
 vector<vector<double>> Fix_to_Double_F(vector<vector<uint64_t>> data);
 vector<double> Fix_to_Double_L(vector<uint64_t> data);
 
+void offlineTest(vector<vector<uint64_t>> data, vector<uint64_t> label, TestingParams t_params, LogisticRegression trainModel);
+
 #endif
