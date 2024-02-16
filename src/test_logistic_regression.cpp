@@ -57,15 +57,16 @@ void TestLogisticRegression::test_model(){
 
         for(int i = 0; i < n_; i++){
             double temp;
-            if(predictionD[i] >= 1){
-                temp = 1.0;
-            }
-            else if(predictionD[i] >= -1 && predictionD[i] < 1){
-                temp = predictionD[i] + 0.5;
-            }
-            else{
-                temp = 0;
-            }
+            // if(predictionD[i] >= 1){
+            //     temp = 1.0;
+            // }
+            // else if(predictionD[i] >= -1 && predictionD[i] < 1){
+            //     temp = predictionD[i] + 0.5;
+            // }
+            // else{
+            //     temp = 0;
+            // }
+            temp = 1.0 / (1 + exp(-prediction[i]));
             predictionD[i] = temp;
         }
         
@@ -76,13 +77,13 @@ void TestLogisticRegression::test_model(){
             if(Y[i] == SCALING_FACTOR){
                 if(predictionD[i] >= 0.5){
                     num_correct++;
-                    cout << 1 << endl;
+                    // cout << 1 << endl;
                 }
             }
             else{
                 if(predictionD[i] < 0.5){
                     num_correct++;
-                    cout << 0 << endl;
+                    // cout << 0 << endl;
                 }
             }
         }
