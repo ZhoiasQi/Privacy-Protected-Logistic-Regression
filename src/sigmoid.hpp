@@ -3,6 +3,6 @@
 
 #include "util.hpp"
 
-ColVectorXi64 sigmoid(ColVectorXi64 x);
+ColVectorXi64 sigmoid(ColVectorXi64 x, int i_);
 
 #endif

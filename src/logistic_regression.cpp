@@ -24,7 +24,11 @@ void LogisticRegression::train_model(){
 
         w = w + online->wi;
 
+        //cout << w << endl;
+
         descale<ColVectorXi64, ColVectorXd>(w, w_d);
+
+        //cout << w_d << endl;
 
     }
 
