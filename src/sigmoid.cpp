@@ -6,9 +6,45 @@ using namespace emp;
 using namespace std;
 
 //TODO: 实现MPC友好的sigmoid函数
-ColVectorXi64 sigmoid(ColVectorXi64 x, int i_){
-    //TODO: 先不安全实现先用着
+ColVectorXi64 sigmoid(ColVectorXi64 x, int i_, emp::NetIO* io){
+
+    //矩阵x表示前面的计算结果，i_表示是Alice还是Bob，Alice的i_ = 0, Bob的i_ = 1
+
     int size = x.size();
+
+    for(int i = 0; i < size; i++){
+
+        //Alice的时候
+        if(i_ = 0){
+
+            uint64_t u0 = x[i];
+            uint64_t u1;
+
+            send<uint64_t>(io, u0);
+            recv<uint64_t>(io, u1);
+
+            uint64_t temp = u0 + SCALING_FACTOR / 2 + u1;
+
+            int b1;
+            if(temp >> 63 == 1){
+                b1 = 0;
+            }
+            else{
+                b1 = 1;
+            }
+
+        }
+        else{
+
+        }
+
+        
+
+
+    }
+
+
+    
     ColVectorXi64 res(size);
 
     // if(i_ == 0){

@@ -116,14 +116,14 @@ int main(int argc, char** argv){
     cout << "Training" << endl;
     cout << "========" << endl;
 
-    cout << "Model Explanation: " << endl 
-        << "Alice has all the data, but does not have enough arithmetic power to build the model," << endl
-        <<  "so she use the auxiliary server Bob together to build the model, " << endl 
-        << "and finally only Alice can get the machine learning model." << endl;
+    // cout << "Model Explanation: " << endl 
+    //     << "Alice has all the data, but does not have enough arithmetic power to build the model," << endl
+    //     <<  "so she use the auxiliary server Bob together to build the model, " << endl 
+    //     << "and finally only Alice can get the machine learning model." << endl;
 
-    cout << "========" << endl;
+    // cout << "========" << endl;
 
-    cout << "Output: " << endl;
+    // cout << "Output: " << endl;
 
     //转成调用Eigen库的形式便于后续处理
     TrainingParams params;
@@ -156,15 +156,15 @@ int main(int argc, char** argv){
     cout << "Testing" << endl;
     cout << "=======" << endl;
 
-    cout << "Model Explanation: " << endl 
-        << "Alice has already obtained the model w in the training phase above, " << endl
-        << "and Carol needs to use Alice's model for testing. " << endl
-        << "But Alice doesn't want to reveal her model, and Carol doesn't want to reveal her data." << endl
-        << "For the sake of code, since Bob is no longer needed, we continue to use terminal 2 as Carol for testing." << endl;
+    // cout << "Model Explanation: " << endl 
+    //     << "Alice has already obtained the model w in the training phase above, " << endl
+    //     << "and Carol needs to use Alice's model for testing. " << endl
+    //     << "But Alice doesn't want to reveal her model, and Carol doesn't want to reveal her data." << endl
+    //     << "For the sake of code, since Bob is no longer needed, we continue to use terminal 2 as Carol for testing." << endl;
 
-    cout << "=======" << endl;
+    // cout << "=======" << endl;
 
-    cout << "Output: " << endl;
+    // cout << "Output: " << endl;
 
     int n_= testing_Features.size();
 
@@ -175,9 +175,9 @@ int main(int argc, char** argv){
 
     cout << "Number of Instances: " << t_params.n << endl;
 
-    if(PARTY == ALICE){
-        offlineTest(testing_Features, testing_Labels, t_params, trainModel);
-    }
+    // if(PARTY == ALICE){
+    //     offlineTest(testing_Features, testing_Labels, t_params, trainModel);
+    // }
     
     RowMatrixXi64 testX(t_params.n, t_params.d);
     vector2d_to_RowMatrixXi64(testing_Features, testX); 

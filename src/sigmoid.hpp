@@ -3,6 +3,6 @@
 
 #include "util.hpp"
 
-ColVectorXi64 sigmoid(ColVectorXi64 x, int i_);
+ColVectorXi64 sigmoid(ColVectorXi64 x, int i_, emp::NetIO* io);
 
 #endif
