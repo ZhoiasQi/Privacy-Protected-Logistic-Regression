@@ -29,6 +29,7 @@ INCLUDE_DIRECTORIES(${EMP-OT_INCLUDE_DIRS})  #添加引用 EMP-OT 包的头文件路径
 add_executable(PPLR
     src/pplr.cpp
     src/read_WBDC.cpp
+    src/read_Arcene.cpp
     src/preparation.cpp
     src/logistic_regression.cpp
     src/offline_phase.cpp 
@@ -43,6 +44,7 @@ add_executable(PPLR
 add_executable(ideal_functionality
     src/ideal_functionality.cpp 
     src/read_WBDC.cpp
+    src/read_Arcene.cpp
     src/util.cpp
 )
 

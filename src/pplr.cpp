@@ -1,4 +1,5 @@
 #include "read_WBDC.hpp"
+#include "read_Arcene.hpp"
 #include "preparation.hpp" 
 
 using namespace Eigen;
@@ -33,6 +34,17 @@ int main(int argc, char** argv){
     NetIO* io = new NetIO(PARTY == ALICE ? nullptr : address.c_str(), port);
 
     /****************************读取数据集**************************************/
+    // vector<vector<uint64_t>> trainData = readData("../../arcene/ARCENE/arcene_train.data");
+    // vector<vector<uint64_t>> testData = readData("../../arcene/ARCENE/arcene_valid.data");
+
+    // vector<uint64_t> trainLabel = readLabel("../../arcene/ARCENE/arcene_train.labels");
+    // vector<uint64_t> testLabel = readLabel("../../arcene/arcene_valid.labels");
+
+
+    // /****************************读取数据集**************************************/
+
+
+
     //将全部数据作为结构体读入dataSet数组
     vector<BreastCancerInstance> dataSet;
     string fileName = "../../Dataset/wdbc.data";
