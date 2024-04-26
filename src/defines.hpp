@@ -3,9 +3,9 @@
 
 #include <Eigen/Dense>  // 包含 Eigen 库的头文件
 
-#define BATCH_SIZE 5 // 定义批处理大小为 128,暂时改成16试试
+#define BATCH_SIZE 4 // 定义批处理大小为 128,暂时改成16试试
 #define BITLEN 64  // 定义位长度为 64
-#define LEARNING_RATE_INV 256  // 定义学习率的倒数（1/LEARNING_RATE）
+#define LEARNING_RATE_INV 128  // 定义学习率的倒数（1/LEARNING_RATE）
 #define DEBUG 1  // 定义调试模式开关（1 为开启，0 为关闭）
 
 #define CAROL 2 //在测试阶段让carol作为终端2的主体

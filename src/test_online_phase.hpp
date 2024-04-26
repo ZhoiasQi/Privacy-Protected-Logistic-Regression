@@ -9,9 +9,9 @@ using namespace emp;
 
 template<class Derived, class OtherDerived>
 void descaleTest(Eigen::PlainObjectBase<Derived>& X, Eigen::PlainObjectBase<OtherDerived>& x) {
-    Derived signed_X = X * SCALING_FACTOR; // 矩阵X进行反缩放
-    x = (X.template cast<int64_t>()).template cast<double>(); // 将反缩放后的矩阵X转换为double类型并存储在变量x中
-    x /= SCALING_FACTOR; // 对变量x进行进一步的缩放
+    Derived signed_X = X * SCALING_FACTOR; 
+    x = (X.template cast<int64_t>()).template cast<double>(); 
+    x /= SCALING_FACTOR; 
     return;
 }
 

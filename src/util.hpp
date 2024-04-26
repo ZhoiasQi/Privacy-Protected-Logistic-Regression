@@ -5,6 +5,9 @@
 #include <iostream> // 输入输出流
 #include <vector> // 向量容器
 #include <emp-tool/emp-tool.h> // 引入 emp-tool 库
+#include <emp-ot/emp-ot.h> 
+#include <chrono>
+#include <random>  
 
 void vector2d_to_RowMatrixXd(std::vector<std::vector<double>>& x, RowMatrixXd& X); // 将二维向量转换为行矩阵
 void vector_to_ColVectorXd(std::vector<double>& x, ColVectorXd& X); // 将一维向量转换为列向量

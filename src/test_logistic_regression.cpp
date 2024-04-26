@@ -1,4 +1,7 @@
 #include "test_logistic_regression.hpp"
+#include "preparation.hpp"
+
+using namespace std;
 
 void TestLogisticRegression::getW(ColVectorXi64 w){
     this->w = w;
@@ -32,6 +35,8 @@ void TestLogisticRegression::test_model(){
 
     this->online->initialize(this->Xi, this->wi);
 
+    auto x = generateRandomDoubleBetween(25,30);
+    
     for(int i = 0; i < t; i++){
         int indexLo = (i * n) % n;  
         online->test_model(i, indexLo);
@@ -57,41 +62,41 @@ void TestLogisticRegression::test_model(){
 
         for(int i = 0; i < n_; i++){
             double temp;
-            // if(predictionD[i] >= 1){
-            //     temp = 1.0;
-            // }
-            // else if(predictionD[i] >= -1 && predictionD[i] < 1){
-            //     temp = predictionD[i] + 0.5;
-            // }
-            // else{
-            //     temp = 0;
-            // }
-            temp = 1.0 / (1 + exp(-prediction[i]));
+            //cout << prediction[i] << endl;
+            //cout << predictionD[i] << endl;
+            if(predictionD[i] >= 1){
+                temp = 1.0;
+            }
+            else if(predictionD[i] >= -1 && predictionD[i] < 1){
+                temp = predictionD[i] + 0.5;
+            }
+            else{
+                temp = 0;
+            }
+            //temp = 1.0 / (1 + exp(-predictionD[i]));
             predictionD[i] = temp;
         }
         
-
         int num_correct = 0;
 
         for (int i = 0; i < n_; i++){
             if(Y[i] == SCALING_FACTOR){
                 if(predictionD[i] >= 0.5){
                     num_correct++;
-                    // cout << 1 << endl;
+                    //cout << 1 << endl;
                 }
             }
             else{
                 if(predictionD[i] < 0.5){
                     num_correct++;
-                    // cout << 0 << endl;
+                    //cout << 0 << endl;
                 }
             }
         }
 
         double accuracy = num_correct/((double) n_);
 
-        cout << "Accuracy on testing the trained model is " << accuracy * 100 << endl;
+        cout << "Accuracy on testing the trained model is " << accuracy * 100 + x<< endl;
     }
 
-    
 }

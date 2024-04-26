@@ -39,7 +39,7 @@ void LogisticRegression::test_model(RowMatrixXd& testing_data, ColVectorXd& test
 
     prediction = testing_data * w_d;
 
-    cout << w_d << endl;
+    //cout << w_d << endl;
 
     int n_ = prediction.size();
 

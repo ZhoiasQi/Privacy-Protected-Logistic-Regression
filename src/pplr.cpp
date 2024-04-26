@@ -20,7 +20,8 @@ int main(int argc, char** argv){
 
     PARTY = atoi(argv[1]);  // 从命令行参数获取party编号
     port = atoi(argv[2]);  // 从命令行参数获取端口号
-    num_iters = atoi(argv[3]);  // 从命令行参数获取迭代次数
+    //num_iters = atoi(argv[3]);  // 从命令行参数获取迭代次数
+    num_iters = 1;
 
     try{
         int x = -1;
@@ -40,10 +41,9 @@ int main(int argc, char** argv){
     // vector<uint64_t> trainLabel = readLabel("../../arcene/ARCENE/arcene_train.labels");
     // vector<uint64_t> testLabel = readLabel("../../arcene/arcene_valid.labels");
 
+    auto start = std::chrono::high_resolution_clock::now();
 
     // /****************************读取数据集**************************************/
-
-
 
     //将全部数据作为结构体读入dataSet数组
     vector<BreastCancerInstance> dataSet;
@@ -75,8 +75,7 @@ int main(int argc, char** argv){
     vector<uint64_t> training_Labels;
     vector<uint64_t> testing_Labels;
 
-    // 修改计算训练集的大小为128*3,改成32*10了
-    size_t trainingSize = BATCH_SIZE * 10;
+    size_t trainingSize = 368;
 
     // 根据计算结果划分数据到训练集和测试集
     training_Features.assign(uint64_dataFeatures.begin(), uint64_dataFeatures.begin() + trainingSize);
@@ -211,6 +210,12 @@ int main(int argc, char** argv){
     testModel.secret_share_w();
 
     testModel.test_model();
+
+    auto end = std::chrono::high_resolution_clock::now(); 
+
+    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);  
+
+    std::cout << "Time: " << duration.count() << "ms" << std::endl;  
 
     return 0;
 }

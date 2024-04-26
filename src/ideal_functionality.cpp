@@ -1,6 +1,6 @@
 //用来测试本地直接进行明文逻辑回归训练的结果，看看和安全逻辑回归的区别。
 
-// #include "read_WBDC.hpp"
+#include "read_WBDC.hpp"
 #include "read_Arcene.hpp"
 #include "util.hpp"
 #include <math.h>
@@ -116,29 +116,58 @@ public:
 
 int main(int argc, char** argv){
 
+    auto start = std::chrono::high_resolution_clock::now();
+
     //读参数
-    int num_iters = atoi(argv[1]);
+    //int num_iters = atoi(argv[1]);
+
+    //这部分是老数据集的前期数据处理
     
     //读文件
-    // vector<BreastCancerInstance> dataSet;
-    // string fileName = "../../Dataset/wdbc.data";
+    vector<BreastCancerInstance> dataSet;
+    string fileName = "../../Dataset/wdbc.data";
 
-    // dataSet = read_WBDC_data(fileName);
+    dataSet = read_WBDC_data(fileName);
 
-    // vector<vector<double>> dataFeatures;
-    // vector<double> dataLabels;
+    vector<vector<double>> dataFeatures;
+    vector<double> dataLabels;
 
-    // dataFeatures = reverse_BreastCancerInstance_to_features(dataSet);
-    // dataLabels = reverse_BreastCancerInstance_to_labels(dataSet);
+    dataFeatures = reverse_BreastCancerInstance_to_features(dataSet);
+    dataLabels = reverse_BreastCancerInstance_to_labels(dataSet);
 
-    // //按照相同的顺序随机打乱特征和标签
-    // //shuffleData(dataFeatures, dataLabels);
+    // 划分数据集
 
-    //划分测试集和训练集
-    vector<vector<double>> training_Features = readData_("../../arcene/ARCENE/arcene_train.data");
-    vector<vector<double>> testing_Features = readData_("../../arcene/ARCENE/arcene_valid.data");
-    vector<double> training_Labels = readLabel_("../../arcene/ARCENE/arcene_train.labels");
-    vector<double> testing_Labels = readLabel_("../../arcene/arcene_valid.labels");
+    size_t trainSize = 368; // 训练集大小  
+
+    std::vector<std::vector<double>> training_Features(dataFeatures.begin(), dataFeatures.begin() + trainSize);  
+
+    std::vector<double> training_Labels(dataLabels.begin(), dataLabels.begin() + trainSize);  
+
+    // 剩余样本作为测试集  
+
+    std::vector<std::vector<double>> testing_Features(dataFeatures.begin() + trainSize, dataFeatures.end());  
+
+    std::vector<double> testing_Labels(dataLabels.begin() + trainSize, dataLabels.end());
+
+    //TODO：这部分是新数据集
+
+    // //划分测试集和训练集
+    // vector<vector<double>> training_Features = readData_("../../arcene/ARCENE/arcene_train.data");
+    // vector<double> training_Labels = readLabel_("../../arcene/ARCENE/arcene_train.labels");
+
+    // vector<vector<double>> testing_Features = readData_("../../arcene/ARCENE/arcene_valid.data");
+    // vector<double> testing_Labels = readLabel_("../../arcene/arcene_valid.labels");
+    
+    // auto temp1 = training_Features;
+    // auto temp2 = training_Labels;
+
+    // for(int i = 0; i < num_iters - 1; i++){
+    //     std::default_random_engine generator; 
+    //     std::shuffle(temp1.begin(), temp1.end(), generator);  
+    //     std::shuffle(temp2.begin(), temp2.end(), generator); 
+    //     training_Features.insert(training_Features.end(),temp1.begin(),temp1.end());
+    //     training_Labels.insert(training_Labels.end(),temp2.begin(),temp2.end());
+    // }
 
     //训练
     cout << "========" << endl;
@@ -177,6 +206,12 @@ int main(int argc, char** argv){
     vector_to_ColVectorXd(testing_Labels, testY);
 
     logisticRegression.test_model(testX, testY);
+
+    auto end = std::chrono::high_resolution_clock::now(); 
+
+    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);  
+
+    std::cout << "Time: " << duration.count() << "ms" << std::endl;  
 
     return 0;
 }

@@ -79,7 +79,6 @@ void OnlinePhase::train_batch(int iter, int indexLo){
 
     truncate<ColVectorXi64>(i, SCALING_FACTOR, Y_);
 
-    //TODO: Âß¼­»Ø¹é»¹Ã»Ð´
     Sig = sigmoid(Y_, i, io);
 
     D = Sig - Y;
