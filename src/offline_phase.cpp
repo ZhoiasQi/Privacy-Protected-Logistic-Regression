@@ -5,6 +5,8 @@ using Eigen::Matrix;
 using namespace emp;
 using namespace std;
 
+extern Traffic traffic;
+
 /**
  *  初始化矩阵的数据。
  *  使用伪随机生成器 prg 随机生成 Ai、Bi 和 Bi_ 数据。
@@ -188,19 +190,35 @@ void OfflineSetUp::secure_mult(int N, int D, vector<vector<uint64_t>>& a, vector
     }
 
 
+    double traff = 0;
+
     if (party == ALICE){
         send_ot->send(x0, x1, total_ot);
+
+        traff = traff + total_ot * sizeof(x0) / (double)(B_TO_MB);
+        traff = traff + total_ot * sizeof(x1) / (double)(B_TO_MB);
+        
     }
     else if (party == BOB){
         recv_ot->recv(rec, sigma, total_ot);
+
+        traff = traff + total_ot * sizeof(rec) / (double)(B_TO_MB);
+
     }
 
     if (party == BOB){
         send_ot->send(x0, x1, total_ot);
+
+        traff = traff + total_ot * sizeof(x0) / (double)(B_TO_MB);
+        traff = traff + total_ot * sizeof(x1) / (double)(B_TO_MB);
     }
     else if (party == ALICE){
         recv_ot->recv(rec, sigma, total_ot);
+
+        traff = traff + total_ot * sizeof(rec) / (double)(B_TO_MB);
     }
+
+    traffic.offline += traff;
 
     int indexRec = 0;
     // 循环变量 j 从 0 到 D

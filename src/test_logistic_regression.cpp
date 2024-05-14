@@ -1,7 +1,7 @@
 #include "test_logistic_regression.hpp"
-#include "preparation.hpp"
 
 using namespace std;
+
 
 void TestLogisticRegression::getW(ColVectorXi64 w){
     this->w = w;
@@ -10,32 +10,32 @@ void TestLogisticRegression::getW(ColVectorXi64 w){
 void TestLogisticRegression::secret_share_w(){
     
     if (party == ALICE) {  
-        emp::PRG prg;  // 伪随机数生成器对象
-        ColVectorXi64 rW(w.rows(), w.cols());  // 随机标签向量
-        prg.random_data(rW.data(), w.rows() * w.cols() * sizeof(uint64_t));  // 生成随机数据 rW
+        emp::PRG prg;  
+        ColVectorXi64 rW(w.rows(), w.cols()); 
+        prg.random_data(rW.data(), w.rows() * w.cols() * sizeof(uint64_t));  
         wi = w + rW;
         rW *= -1;
-        send<ColVectorXi64>(io, wi);  // 发送随机数据 rY
+        send<ColVectorXi64>(io, wi);  
         wi = rW;
 
         cout << "Alice has secretly sent the secret model w to Carol" << endl;
     } 
     else {  
 
-        recv<ColVectorXi64>(io, wi);  // 从对方接收加密后的训练标签
+        recv<ColVectorXi64>(io, wi);  
 
         cout << "Carol has received the secret model w from Alice" << endl;
 
     }
 }
 
-void TestLogisticRegression::test_model(){
+double TestLogisticRegression::test_model(){
     
     this->online = new TestOnlinePhase(params, io, &triples);
 
     this->online->initialize(this->Xi, this->wi);
 
-    auto x = generateRandomDoubleBetween(25,30);
+    //auto x = ran();
     
     for(int i = 0; i < t; i++){
         int indexLo = (i * n) % n;  
@@ -62,7 +62,7 @@ void TestLogisticRegression::test_model(){
 
         for(int i = 0; i < n_; i++){
             double temp;
-            //cout << prediction[i] << endl;
+            // cout << prediction[i] << endl;
             //cout << predictionD[i] << endl;
             if(predictionD[i] >= 1){
                 temp = 1.0;
@@ -83,20 +83,21 @@ void TestLogisticRegression::test_model(){
             if(Y[i] == SCALING_FACTOR){
                 if(predictionD[i] >= 0.5){
                     num_correct++;
-                    //cout << 1 << endl;
+                    cout << 1 << endl;
                 }
             }
             else{
                 if(predictionD[i] < 0.5){
                     num_correct++;
-                    //cout << 0 << endl;
+                    cout << 0 << endl;
                 }
             }
         }
 
         double accuracy = num_correct/((double) n_);
 
-        cout << "Accuracy on testing the trained model is " << accuracy * 100 + x<< endl;
+        return accuracy;
+
     }
 
 }

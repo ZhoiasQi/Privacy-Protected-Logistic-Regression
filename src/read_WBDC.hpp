@@ -10,7 +10,7 @@ using namespace std;
 
 struct BreastCancerInstance {
     string id;
-    bool diagnosis; // 真表示恶性
+    bool diagnosis; 
     vector<float> features;
 };
 

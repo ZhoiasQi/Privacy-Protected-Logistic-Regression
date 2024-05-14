@@ -13,7 +13,7 @@ Eigen::IOFormat CommaInitFmt(Eigen::StreamPrecision, Eigen::DontAlignCols, ", ",
 
 struct TrainingParams{
     int n, d;
-    double alpha = 1.0/LEARNING_RATE_INV;
+    double alpha = 1.0/LEARNING_RATE_INV_I;
 };
 
 class LogisticRegression{
@@ -26,7 +26,7 @@ public:
     LogisticRegression(RowMatrixXd& training_data, ColVectorXd& training_labels, TrainingParams params){
         this->n = params.n;
         this->d = params.d;
-        this->t = (params.n)/BATCH_SIZE;
+        this->t = (params.n)/BATCH_SIZE_I;
         this->alpha = params.alpha;
         X = training_data;
         Y = training_labels;
@@ -45,25 +45,32 @@ public:
     }
 
     void train_batch(int iter, int indexLo){
-        RowMatrixXd Xb = X.block(indexLo, 0, BATCH_SIZE, d);
-        ColVectorXd Yb = Y.segment(indexLo, BATCH_SIZE);
+        RowMatrixXd Xb = X.block(indexLo, 0, BATCH_SIZE_I, d);
+        ColVectorXd Yb = Y.segment(indexLo, BATCH_SIZE_I);
 
-        ColVectorXd Y_(BATCH_SIZE);
-        ColVectorXd Sig(BATCH_SIZE);
-        ColVectorXd D(BATCH_SIZE);
+        ColVectorXd Y_(BATCH_SIZE_I);
+        ColVectorXd Sig(BATCH_SIZE_I);
+        ColVectorXd D(BATCH_SIZE_I);
         ColVectorXd delta(d);
 
         Y_ = Xb * w;
 
-        for (int i = 0; i < BATCH_SIZE; i++) {
+            // for(int i = 0; i < BATCH_SIZE_I; i++){
+            //     cout << Y_(i) << "  ";
+            // }
+            // cout << endl;
+
+        for (int i = 0; i < BATCH_SIZE_I; i++) {
             Sig(i) = sigmoid(Y_(i));
+            //cout << Sig(i) << endl;
         }
+
 
         D = Sig - Yb;
 
         delta = Xb.transpose() * D;
 
-        delta = (delta * alpha)/BATCH_SIZE;
+        delta = (delta * alpha)/BATCH_SIZE_I;
 
         w -= delta;
 
@@ -71,7 +78,7 @@ public:
 
     void train_model(){
         for (int i = 0; i < t; i++){
-            int indexLo = (i * BATCH_SIZE) % n;
+            int indexLo = (i * BATCH_SIZE_I) % n;
             train_batch(i, indexLo);
             //cout << "t = " << i << endl << w << endl;
         }
@@ -95,7 +102,7 @@ public:
 
         int num_correct = 0;
         for (int i = 0; i < n_; i++){
-            //cout << prediction[i] << "   " << testing_labels[i] << endl;
+            // cout << prediction[i] << "   " << testing_labels[i] << endl;
 
             if(testing_labels[i] == 1){
                 if(prediction[i] >= 0.5){
@@ -120,6 +127,7 @@ int main(int argc, char** argv){
 
     //读参数
     //int num_iters = atoi(argv[1]);
+    int num_iters = 50;
 
     //这部分是老数据集的前期数据处理
     
@@ -137,7 +145,7 @@ int main(int argc, char** argv){
 
     // 划分数据集
 
-    size_t trainSize = 368; // 训练集大小  
+    size_t trainSize = 400; // 训练集大小  
 
     std::vector<std::vector<double>> training_Features(dataFeatures.begin(), dataFeatures.begin() + trainSize);  
 
@@ -149,7 +157,7 @@ int main(int argc, char** argv){
 
     std::vector<double> testing_Labels(dataLabels.begin() + trainSize, dataLabels.end());
 
-    //TODO：这部分是新数据集
+    //这部分是新数据集
 
     // //划分测试集和训练集
     // vector<vector<double>> training_Features = readData_("../../arcene/ARCENE/arcene_train.data");
@@ -158,16 +166,16 @@ int main(int argc, char** argv){
     // vector<vector<double>> testing_Features = readData_("../../arcene/ARCENE/arcene_valid.data");
     // vector<double> testing_Labels = readLabel_("../../arcene/arcene_valid.labels");
     
-    // auto temp1 = training_Features;
-    // auto temp2 = training_Labels;
+    auto temp1 = training_Features;
+    auto temp2 = training_Labels;
 
-    // for(int i = 0; i < num_iters - 1; i++){
-    //     std::default_random_engine generator; 
-    //     std::shuffle(temp1.begin(), temp1.end(), generator);  
-    //     std::shuffle(temp2.begin(), temp2.end(), generator); 
-    //     training_Features.insert(training_Features.end(),temp1.begin(),temp1.end());
-    //     training_Labels.insert(training_Labels.end(),temp2.begin(),temp2.end());
-    // }
+    for(int i = 0; i < num_iters - 1; i++){
+        // std::default_random_engine generator; 
+        // std::shuffle(temp1.begin(), temp1.end(), generator);  
+        // std::shuffle(temp2.begin(), temp2.end(), generator); 
+        training_Features.insert(training_Features.end(),temp1.begin(),temp1.end());
+        training_Labels.insert(training_Labels.end(),temp2.begin(),temp2.end());
+    }
 
     //训练
     cout << "========" << endl;
@@ -183,6 +191,13 @@ int main(int argc, char** argv){
 
     RowMatrixXd X(params.n, params.d);
     vector2d_to_RowMatrixXd(training_Features, X);
+
+    // for(int i = 0; i < params.n; i++){
+    //     for(int j = 0; j < params.d; j++){
+    //         cout << X(i,j) << " ";
+    //     }
+    //     cout << endl;
+    // }
     
     ColVectorXd Y(params.n);
     vector_to_ColVectorXd(training_Labels, Y);

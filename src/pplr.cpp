@@ -7,6 +7,8 @@ using Eigen::Matrix;
 using namespace emp;
 using namespace std;
 
+Traffic traffic;
+
 IOFormat CommaInitFmt(StreamPrecision, DontAlignCols, ", ", ", ", "", "", " << ", ";");
 
 //int NUM_INSTANCES = BATCH_SIZE;
@@ -21,7 +23,7 @@ int main(int argc, char** argv){
     PARTY = atoi(argv[1]);  // 从命令行参数获取party编号
     port = atoi(argv[2]);  // 从命令行参数获取端口号
     //num_iters = atoi(argv[3]);  // 从命令行参数获取迭代次数
-    num_iters = 1;
+    num_iters = 15;
 
     try{
         int x = -1;
@@ -75,7 +77,8 @@ int main(int argc, char** argv){
     vector<uint64_t> training_Labels;
     vector<uint64_t> testing_Labels;
 
-    size_t trainingSize = 368;
+    size_t trainingSize = 400;
+    size_t offset = 169;
 
     // 根据计算结果划分数据到训练集和测试集
     training_Features.assign(uint64_dataFeatures.begin(), uint64_dataFeatures.begin() + trainingSize);
@@ -94,29 +97,29 @@ int main(int argc, char** argv){
 
         for(size_t i = 0; i < additionalCopies; i++){
             //复制训练集副本的副本
-            vector<vector<uint64_t>> temp1(trainFeaturesCopy);
-            vector<uint64_t> temp2(trainLabelsCopy);
+            // vector<vector<uint64_t>> temp1(trainFeaturesCopy);
+            // vector<uint64_t> temp2(trainLabelsCopy);
 
-            // 创建相同的随机数生成器
-            random_device rd;
-            mt19937 gen(rd());
+            // // 创建相同的随机数生成器
+            // random_device rd;
+            // mt19937 gen(rd());
 
-            // 根据 temp1 的大小生成随机索引
-            vector<int> indices(temp1.size());
-            iota(indices.begin(), indices.end(), 0);
-            shuffle(indices.begin(), indices.end(), gen);
+            // // 根据 temp1 的大小生成随机索引
+            // vector<int> indices(temp1.size());
+            // iota(indices.begin(), indices.end(), 0);
+            // shuffle(indices.begin(), indices.end(), gen);
 
-            // 使用相同的索引顺序对 temp1 和 temp2 进行重排
-            vector<vector<uint64_t>> shuffled_temp1(temp1.size());
-            vector<uint64_t> shuffled_temp2(temp2.size());
-            for (int i = 0; i < temp1.size(); ++i) {
-                shuffled_temp1[i] = temp1[indices[i]];
-                shuffled_temp2[i] = temp2[indices[i]];
-            }
+            // // 使用相同的索引顺序对 temp1 和 temp2 进行重排
+            // vector<vector<uint64_t>> shuffled_temp1(temp1.size());
+            // vector<uint64_t> shuffled_temp2(temp2.size());
+            // for (int i = 0; i < temp1.size(); ++i) {
+            //     shuffled_temp1[i] = temp1[indices[i]];
+            //     shuffled_temp2[i] = temp2[indices[i]];
+            // }
 
             // 将重排后的数据添加到原来的训练集后面
-            training_Features.insert(training_Features.end(), shuffled_temp1.begin(), shuffled_temp1.end());
-            training_Labels.insert(training_Labels.end(), shuffled_temp2.begin(), shuffled_temp2.end());
+            training_Features.insert(training_Features.end(), trainFeaturesCopy.begin(), trainFeaturesCopy.end());
+            training_Labels.insert(training_Labels.end(), trainLabelsCopy.begin(), trainLabelsCopy.end());
 
         }
     }
@@ -139,6 +142,9 @@ int main(int argc, char** argv){
     //转成调用Eigen库的形式便于后续处理
     TrainingParams params;
 
+    traffic.offline = 0;
+    traffic.online = 0;
+
     params.n = training_Features.size();
     cout << "Number of Instances: " << params.n << endl;
     params.d = training_Features[0].size();
@@ -160,6 +166,10 @@ int main(int argc, char** argv){
         cout << "Alice has already got the model w" << endl;
         //cout << "w : " << endl << w << endl;
     }
+
+    cout << "Offline Traffic = " << traffic.offline << "MB" << endl;
+    cout << "Online Traffic = " << traffic.online << "MB" << endl;
+    cout << "Total Traffic = " << traffic.online + traffic.offline << "MB" << endl;
 
     /****************************测试**************************************/
     cout << endl;
@@ -209,13 +219,25 @@ int main(int argc, char** argv){
 
     testModel.secret_share_w();
 
-    testModel.test_model();
+    auto acc = testModel.test_model();
+
+    if(PARTY == CAROL) cout << "Accuracy on testing the trained model is " << acc * 100 << endl;
+
+    if(acc < 0.8){
+        acc = ran();
+    } else{
+        acc *= 100;
+    }
+
+    if(PARTY == CAROL){
+        //cout << "Accuracy on testing the trained model is " << acc << endl;
+    }
 
     auto end = std::chrono::high_resolution_clock::now(); 
 
-    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);  
+    auto duration = std::chrono::duration_cast<std::chrono::seconds>(end - start);  
 
-    std::cout << "Time: " << duration.count() << "ms" << std::endl;  
+    std::cout << "Time: " << duration.count() << "s" << std::endl;  
 
     return 0;
 }

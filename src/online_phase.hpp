@@ -16,26 +16,26 @@ void scale(Eigen::PlainObjectBase<Derived>& X, Eigen::PlainObjectBase<OtherDeriv
 
 template<class Derived, class OtherDerived>
 void descale(Eigen::PlainObjectBase<Derived>& X, Eigen::PlainObjectBase<OtherDerived>& x) {
-    Derived signed_X = X * SCALING_FACTOR; // 矩阵X进行反缩放
-    x = (X.template cast<int64_t>()).template cast<double>(); // 将反缩放后的矩阵X转换为double类型并存储在变量x中
-    x /= SCALING_FACTOR; // 对变量x进行进一步的缩放
+    Derived signed_X = X * SCALING_FACTOR; 
+    x = (X.template cast<int64_t>()).template cast<double>(); 
+    x /= SCALING_FACTOR;
     return;
 }
 
 template<class Derived>
 void truncate(int i, uint64_t scaling_factor, Eigen::PlainObjectBase<Derived>& X) {
     if (i == 1)
-        X = -1 * X; // 如果i为1，则将矩阵X的元素取相反数
-    X /= scaling_factor; // 对矩阵X进行缩放，除以缩放因子scaling_factor
+        X = -1 * X;
+    X /= scaling_factor; 
     if (i == 1)
-        X = -1 * X; // 如果i为1，则再次将矩阵X的元素取相反数，恢复原始值
+        X = -1 * X; 
     return;
 }
 
 struct TrainingParams {
-    int n;  // 训练样本数量
-    int d;  // 特征维度
-    int alpha_inv = LEARNING_RATE_INV;  // 学习率的倒数
+    int n; 
+    int d; 
+    int alpha_inv = LEARNING_RATE_INV;  
 };
 
 class OnlinePhase{
@@ -77,6 +77,9 @@ public:
     void initialize(RowMatrixXi64& Xi, ColVectorXi64& Yi);
 
     void train_batch(int iter, int indexLo);
+
 };
+
+uint64_t Mypow(uint64_t a, int b);
 
 #endif 

@@ -48,26 +48,26 @@ public:
         setup->getMTs(&triples);
         this->triples = triples;
 
-        RowMatrixXi64 Xi(X.rows(), X.cols());  // 初始化存储加密数据的矩阵
-        //ColVectorXi64 Yi(Y.rows(), Y.cols());  // 初始化存储加密标签的向量
+        RowMatrixXi64 Xi(X.rows(), X.cols());  
+        //ColVectorXi64 Yi(Y.rows(), Y.cols()); 
 
-        if (party == CAROL) {  // 如果当前参与方是CAROL
-            emp::PRG prg;  // 伪随机数生成器对象
-            RowMatrixXi64 rX(X.rows(), X.cols());  // 随机数据矩阵
-            //ColVectorXi64 rY(Y.rows(), Y.cols());  // 随机标签向量
-            prg.random_data(rX.data(), X.rows() * X.cols() * sizeof(uint64_t));  // 生成随机数据 rX
-            //prg.random_data(rY.data(), Y.rows() * Y.cols() * sizeof(uint64_t));  // 生成随机数据 rY
-            Xi = X + rX;  // 加密后的训练数据
-            //Yi = Y + rY;  // 加密后的训练标签
-            rX *= -1;  // 对 rX 中的元素取反
-            //rY *= -1;  // 对 rY 中的元素取反
-            send<RowMatrixXi64>(io, rX);  // 发送随机数据 rX
-            //send<ColVectorXi64>(io, rY);  // 发送随机数据 rY
+        if (party == CAROL) {  
+            emp::PRG prg;  
+            RowMatrixXi64 rX(X.rows(), X.cols()); 
+            //ColVectorXi64 rY(Y.rows(), Y.cols()); 
+            prg.random_data(rX.data(), X.rows() * X.cols() * sizeof(uint64_t)); 
+            //prg.random_data(rY.data(), Y.rows() * Y.cols() * sizeof(uint64_t)); 
+            Xi = X + rX;  
+            //Yi = Y + rY;  
+            rX *= -1;  
+            //rY *= -1;  
+            send<RowMatrixXi64>(io, rX); 
+            //send<ColVectorXi64>(io, rY);  
 
             cout << "Carol has secretly sent the data to Alice" << endl;
-        } else {  // 如果当前参与方是Alice
-            recv<RowMatrixXi64>(io, Xi);  // 从对方接收加密后的训练数据
-            //recv<ColVectorXi64>(io, Yi);  // 从对方接收加密后的训练标签
+        } else {  
+            recv<RowMatrixXi64>(io, Xi);  
+            //recv<ColVectorXi64>(io, Yi); 
 
             cout << "Alice has received the secret data from Carol" << endl;
 
@@ -80,7 +80,7 @@ public:
 
     void secret_share_w();
 
-    void test_model();
+    double test_model();
 };
 
 #endif

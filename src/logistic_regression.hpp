@@ -7,6 +7,8 @@
 
 using namespace std;
 
+extern Traffic traffic;
+
 class LogisticRegression{
 public:
     emp::NetIO* io;  
@@ -31,6 +33,8 @@ public:
         this->w.resize(d);  
         this->w_d.resize(d);  
 
+        auto offs = std::chrono::high_resolution_clock::now();
+        
         this->setup = new OfflineSetUp(n, d, t, io);
         setup->generateMTs(); 
 
@@ -53,19 +57,43 @@ public:
             send<RowMatrixXi64>(io, rX); 
             send<ColVectorXi64>(io, rY);  
 
+            double traff = 0;
+            traff = traff + sizeof(Xi) / (double)(B_TO_MB);
+            traff = traff + sizeof(Yi) / (double)(B_TO_MB);
+            traffic.offline += traff;
+
             cout << "Alice has secretly sent the data to Bob" << endl;
 
         } else { 
             recv<RowMatrixXi64>(io, Xi); 
             recv<ColVectorXi64>(io, Yi);  
 
+            double traff = 0;
+            traff = traff + sizeof(Xi) / (double)(B_TO_MB);
+            traff = traff + sizeof(Yi) / (double)(B_TO_MB);
+            traffic.offline += traff;
+
             cout << "Bob has received the secret data from Alice" << endl;
         }
+
+        auto offe = std::chrono::high_resolution_clock::now(); 
+
+        auto duration = std::chrono::duration_cast<std::chrono::seconds>(offe - offs);  
+
+        std::cout << "Offline Time: " << duration.count() << "s" << std::endl;
+
+        auto ons = std::chrono::high_resolution_clock::now();
 
         this->online = new OnlinePhase(params, io, &triples);  
         online->initialize(Xi, Yi); 
 
         train_model();
+
+        auto one = std::chrono::high_resolution_clock::now(); 
+
+        duration = std::chrono::duration_cast<std::chrono::seconds>(one - ons);  
+
+        std::cout << "Online Time: " << duration.count() << "s" << std::endl;
 
     }
 

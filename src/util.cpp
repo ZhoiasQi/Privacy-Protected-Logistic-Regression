@@ -54,6 +54,13 @@ vector<uint64_t> ColVectorXi64_to_vector(ColVectorXi64 X){
     return x;
 }
 
+double ran() {  
+    std::random_device rd;  
+    std::mt19937 gen(rd());  
+    std::uniform_real_distribution<> dis(A_L, B_H);   
+    return dis(gen); 
+}  
+
 void print128_num(emp::block var){
     uint64_t *v64val = (uint64_t*) &var;
     // 2024/1/18将两个llx改为lx

@@ -5,6 +5,8 @@ using Eigen::Matrix;
 using namespace emp;
 using namespace std;
 
+extern Traffic traffic;
+
 void OnlinePhase::initialize(RowMatrixXi64& Xi, ColVectorXi64& Yi){
     this->Xi = Xi;
     this->Yi = Yi;
@@ -33,6 +35,8 @@ void OnlinePhase::initialize(RowMatrixXi64& Xi, ColVectorXi64& Yi){
     else{
         recv<RowMatrixXi64>(io, E);
     }
+
+    traffic.online += (sizeof(Ei) + sizeof(E))  / (double)B_TO_MB; 
 
     E = E + Ei;
 }
@@ -73,6 +77,8 @@ void OnlinePhase::train_batch(int iter, int indexLo){
         recv<ColVectorXi64>(io, F);
     }
 
+    traffic.online += (sizeof(Fi) + sizeof(F))  / (double)B_TO_MB; 
+
     F = F + Fi;
 
     Y_ = -i * (Eb * F) + X * F + Eb * wi + Z;
@@ -99,6 +105,8 @@ void OnlinePhase::train_batch(int iter, int indexLo){
         recv<ColVectorXi64>(io, F_);
     }
 
+    traffic.online += (sizeof(Fi_) + sizeof(F_))  / (double)B_TO_MB; 
+
     F_ = F_ + Fi_;
 
     RowMatrixXi64 Xt = X.transpose();
@@ -107,9 +115,31 @@ void OnlinePhase::train_batch(int iter, int indexLo){
     delta = -i * (Ebt * F_) + Xt * F_ + Ebt * D + Z_;
 
     truncate<ColVectorXi64>(i, SCALING_FACTOR, delta);
-    //乘学习率，除batch_size, 即除（学习率的倒数*BATCH_SIZE）
-    truncate<ColVectorXi64>(i, alpha_inv * BATCH_SIZE, delta);
+
+    int min = std::min(iter, 15);
+    //cout << min;
+    auto k = alpha_inv;
+
+    if(iter < 5){
+        k = alpha_inv;
+    }
+    else if(iter < 30){
+        int e = (iter - 5) / 3;
+        k = Mypow(k, e);
+    }
+    else{
+        k = Mypow(k, 10);
+    }
+
+    truncate<ColVectorXi64>(i, k * BATCH_SIZE, delta);
 
     wi = wi - delta;
 
+}
+
+uint64_t Mypow(uint64_t a, int b){
+    for(int i = 0; i < b; i++){
+        a *= 2;
+    }
+    return a;
 }

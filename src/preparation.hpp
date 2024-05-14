@@ -21,11 +21,11 @@ vector<double> Fix_to_Double_L(vector<uint64_t> data);
 
 void offlineTest(vector<vector<uint64_t>> data, vector<uint64_t> label, TestingParams t_params, LogisticRegression trainModel);
 
-double generateRandomDoubleBetween(double min, double max) {  
-    std::random_device rd;  // 用于获取随机数种子  
-    std::mt19937 gen(rd()); // 使用Mersenne Twister算法作为随机数生成器  
-    std::uniform_real_distribution<> dis(min, max); // 定义均匀分布  
-    return dis(gen); // 生成随机数  
-}  
+// double generateRandomDoubleBetween(double min, double max) {  
+//     std::random_device rd; 
+//     std::mt19937 gen(rd()); 
+//     std::uniform_real_distribution<> dis(min, max); 
+//     return dis(gen); 
+// }  
 
 #endif
