@@ -20,9 +20,9 @@ int main(int argc, char** argv){
     int port, num_iters;
     string address;
 
-    PARTY = atoi(argv[1]);  // 从命令行参数获取party编号
-    port = atoi(argv[2]);  // 从命令行参数获取端口号
-    //num_iters = atoi(argv[3]);  // 从命令行参数获取迭代次数
+    PARTY = atoi(argv[1]); 
+    port = atoi(argv[2]);  
+    //num_iters = atoi(argv[3]);  
     num_iters = 15;
 
     try{
@@ -47,16 +47,13 @@ int main(int argc, char** argv){
 
     // /****************************读取数据集**************************************/
 
-    //将全部数据作为结构体读入dataSet数组
     vector<BreastCancerInstance> dataSet;
     string fileName = "../../Dataset/wdbc.data";
 
     dataSet = read_WBDC_data(fileName);
 
-    //测试代码：打印中间结果
     //print_WBDC_Data(dataSet);
 
-    //将dataSet数组转化为一个特征值矩阵和一个标签值向量
     vector<vector<double>> dataFeatures;
     vector<double> dataLabels;
 
@@ -64,14 +61,12 @@ int main(int argc, char** argv){
     dataLabels = reverse_BreastCancerInstance_to_labels(dataSet);
     
     /****************************对数据进行前期预处理**************************************/
-    //浮点数转定点数
     vector<vector<uint64_t>> uint64_dataFeatures;
     vector<uint64_t> uint64_dataLabels;
 
     uint64_dataFeatures = Fixed_Point_Representation_Features(dataFeatures);
     uint64_dataLabels = Fixed_Point_Representation_Labels(dataLabels);
 
-    // 划分测试集和训练集
     vector<vector<uint64_t>> training_Features;
     vector<vector<uint64_t>> testing_Features;
     vector<uint64_t> training_Labels;
@@ -80,44 +75,38 @@ int main(int argc, char** argv){
     size_t trainingSize = 400;
     size_t offset = 169;
 
-    // 根据计算结果划分数据到训练集和测试集
     training_Features.assign(uint64_dataFeatures.begin(), uint64_dataFeatures.begin() + trainingSize);
     testing_Features.assign(uint64_dataFeatures.begin() + trainingSize, uint64_dataFeatures.end());
     training_Labels.assign(uint64_dataLabels.begin(), uint64_dataLabels.begin() + trainingSize);
     testing_Labels.assign(uint64_dataLabels.begin() + trainingSize, uint64_dataLabels.end());
 
-    // 扩大训练集到num_iters倍用来反复利用
     size_t additionalCopies = num_iters - 1;
 
     if(additionalCopies > 0){
     
-        //创建一个训练集的副本
         vector<vector<uint64_t>> trainFeaturesCopy(training_Features);
         vector<uint64_t> trainLabelsCopy(training_Labels);
 
         for(size_t i = 0; i < additionalCopies; i++){
-            //复制训练集副本的副本
-            // vector<vector<uint64_t>> temp1(trainFeaturesCopy);
-            // vector<uint64_t> temp2(trainLabelsCopy);
 
-            // // 创建相同的随机数生成器
-            // random_device rd;
-            // mt19937 gen(rd());
+            vector<vector<uint64_t>> temp1(trainFeaturesCopy);
+            vector<uint64_t> temp2(trainLabelsCopy);
 
-            // // 根据 temp1 的大小生成随机索引
-            // vector<int> indices(temp1.size());
-            // iota(indices.begin(), indices.end(), 0);
-            // shuffle(indices.begin(), indices.end(), gen);
+            random_device rd;
+            mt19937 gen(rd());
 
-            // // 使用相同的索引顺序对 temp1 和 temp2 进行重排
-            // vector<vector<uint64_t>> shuffled_temp1(temp1.size());
-            // vector<uint64_t> shuffled_temp2(temp2.size());
-            // for (int i = 0; i < temp1.size(); ++i) {
-            //     shuffled_temp1[i] = temp1[indices[i]];
-            //     shuffled_temp2[i] = temp2[indices[i]];
-            // }
+            vector<int> indices(temp1.size());
+            iota(indices.begin(), indices.end(), 0);
+            shuffle(indices.begin(), indices.end(), gen);
 
-            // 将重排后的数据添加到原来的训练集后面
+            vector<vector<uint64_t>> shuffled_temp1(temp1.size());
+            vector<uint64_t> shuffled_temp2(temp2.size());
+            for (int i = 0; i < temp1.size(); ++i) {
+                shuffled_temp1[i] = temp1[indices[i]];
+                shuffled_temp2[i] = temp2[indices[i]];
+            }
+
+
             training_Features.insert(training_Features.end(), trainFeaturesCopy.begin(), trainFeaturesCopy.end());
             training_Labels.insert(training_Labels.end(), trainLabelsCopy.begin(), trainLabelsCopy.end());
 
@@ -139,7 +128,6 @@ int main(int argc, char** argv){
 
     // cout << "Output: " << endl;
 
-    //转成调用Eigen库的形式便于后续处理
     TrainingParams params;
 
     traffic.offline = 0;

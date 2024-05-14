@@ -43,19 +43,16 @@ void OnlinePhase::initialize(RowMatrixXi64& Xi, ColVectorXi64& Yi){
 
 void OnlinePhase::train_batch(int iter, int indexLo){
     
-    //block参数分别为起始行、起始列、行数、列数
-    //segment参数分别为起始行、行数
-    RowMatrixXi64 X = Xi.block(indexLo, 0, BATCH_SIZE, d); // 根据 indexLo 和 BATCH_SIZE 从 Xi 中截取子矩阵 X
-    ColVectorXi64 Y = Yi.segment(indexLo, BATCH_SIZE); // 根据 indexLo 和 BATCH_SIZE 从 Yi 中截取子向量 Y
-    RowMatrixXi64 Eb = E.block(indexLo, 0, BATCH_SIZE, d); // 根据 indexLo 和 BATCH_SIZE 从 E 中截取子矩阵 Eb
-    ColVectorXi64 V = Vi.col(iter); // 取 Vi 中第 iter 列作为向量 V
-    ColVectorXi64 V_ = Vi_.col(iter); // 取 Vi_ 中第 iter 列作为向量 V_
-    ColVectorXi64 Z = Zi.col(iter); // 取 Zi 中第 iter 列作为向量 Z
-    ColVectorXi64 Z_ = Zi_.col(iter); // 取 Zi_ 中第 iter 列作为向量 Z_
+    RowMatrixXi64 X = Xi.block(indexLo, 0, BATCH_SIZE, d); 
+    ColVectorXi64 Y = Yi.segment(indexLo, BATCH_SIZE); 
+    RowMatrixXi64 Eb = E.block(indexLo, 0, BATCH_SIZE, d); 
+    ColVectorXi64 V = Vi.col(iter); 
+    ColVectorXi64 V_ = Vi_.col(iter); 
+    ColVectorXi64 Z = Zi.col(iter);
+    ColVectorXi64 Z_ = Zi_.col(iter);
 
     Fi = wi - V;
 
-    //一些中间结果辅助向量
     ColVectorXi64 D(BATCH_SIZE);
     ColVectorXi64 Y_(BATCH_SIZE);
     ColVectorXi64 Sig(BATCH_SIZE);
@@ -116,20 +113,22 @@ void OnlinePhase::train_batch(int iter, int indexLo){
 
     truncate<ColVectorXi64>(i, SCALING_FACTOR, delta);
 
-    int min = std::min(iter, 15);
+    // int min = std::min(iter, 15);
     //cout << min;
     auto k = alpha_inv;
 
-    if(iter < 5){
-        k = alpha_inv;
-    }
-    else if(iter < 30){
-        int e = (iter - 5) / 3;
-        k = Mypow(k, e);
-    }
-    else{
-        k = Mypow(k, 10);
-    }
+    // if(iter < 5){
+    //     k = alpha_inv;
+    // }
+    // else if(iter < 36){
+    //     int e = (iter - 5) / 3;
+    //     k = Mypow(k, e);
+    // }
+    // else{
+    //     k = Mypow(k, 10);
+    // }
+
+    // cout << k << " ";
 
     truncate<ColVectorXi64>(i, k * BATCH_SIZE, delta);
 

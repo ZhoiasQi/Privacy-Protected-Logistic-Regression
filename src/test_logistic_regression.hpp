@@ -9,13 +9,13 @@ using namespace std;
 
 class TestLogisticRegression{
 public:
-    emp::NetIO* io;  // 网络输入输出对象指针
-    int party;  // 当前参与方（ALICE或BOB）
-    int n, d, t;  // 训练数据大小、特征数、迭代次数
-    RowMatrixXi64 X;  // 训练数据矩阵
+    emp::NetIO* io; 
+    int party;  
+    int n, d, t;  
+    RowMatrixXi64 X; 
     RowMatrixXi64 Xi;
-    ColVectorXi64 Y;  // 训练标签向量
-    ColVectorXi64 w;  // 权重向量（整数类型）
+    ColVectorXi64 Y;  
+    ColVectorXi64 w; 
     ColVectorXi64 wi;
     ColVectorXi64 prediction;
     ColVectorXi64 prediction_i;
@@ -23,9 +23,8 @@ public:
     TestingParams params;
     SetupTriples triples;
     TestSetUp* setup;
-    TestOnlinePhase* online;  // 在线阶段对象指针
+    TestOnlinePhase* online; 
 
-    //测试阶段构造函数
     TestLogisticRegression(RowMatrixXi64& testing_data, ColVectorXi64& testing_labels, TestingParams params, emp::NetIO* io) {
         this->n = params.n;
         this->d = params.d;
@@ -81,6 +80,8 @@ public:
     void secret_share_w();
 
     double test_model();
+
+    double testmodel();
 };
 
 #endif

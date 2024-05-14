@@ -125,13 +125,11 @@ int main(int argc, char** argv){
 
     auto start = std::chrono::high_resolution_clock::now();
 
-    //读参数
     //int num_iters = atoi(argv[1]);
     int num_iters = 50;
 
     //这部分是老数据集的前期数据处理
     
-    //读文件
     vector<BreastCancerInstance> dataSet;
     string fileName = "../../Dataset/wdbc.data";
 
@@ -143,15 +141,12 @@ int main(int argc, char** argv){
     dataFeatures = reverse_BreastCancerInstance_to_features(dataSet);
     dataLabels = reverse_BreastCancerInstance_to_labels(dataSet);
 
-    // 划分数据集
-
-    size_t trainSize = 400; // 训练集大小  
+    size_t trainSize = 400; 
 
     std::vector<std::vector<double>> training_Features(dataFeatures.begin(), dataFeatures.begin() + trainSize);  
 
     std::vector<double> training_Labels(dataLabels.begin(), dataLabels.begin() + trainSize);  
 
-    // 剩余样本作为测试集  
 
     std::vector<std::vector<double>> testing_Features(dataFeatures.begin() + trainSize, dataFeatures.end());  
 
@@ -204,7 +199,6 @@ int main(int argc, char** argv){
 
     LogisticRegression logisticRegression(X, Y, params);
 
-    //测试
     cout << "=======" << endl;
     cout << "Testing" << endl;
     cout << "=======" << endl;

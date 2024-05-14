@@ -18,10 +18,10 @@ void descaleTest(Eigen::PlainObjectBase<Derived>& X, Eigen::PlainObjectBase<Othe
 template<class Derived>
 void truncateTest(int i, uint64_t scaling_factor, Eigen::PlainObjectBase<Derived>& X) {
     if (i == 1)
-        X = -1 * X; // 如果i为1，则将矩阵X的元素取相反数
-    X /= scaling_factor; // 对矩阵X进行缩放，除以缩放因子scaling_factor
+        X = -1 * X; 
+    X /= scaling_factor; 
     if (i == 1)
-        X = -1 * X; // 如果i为1，则再次将矩阵X的元素取相反数，恢复原始值
+        X = -1 * X; 
     return;
 }
 

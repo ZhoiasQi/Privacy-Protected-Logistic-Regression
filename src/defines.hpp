@@ -23,7 +23,7 @@
 #define A_L 81
 #define B_H 85
 
-extern int PARTY;  // 声明一个全局变量 PARTY（表示派对编号）
+extern int PARTY;  
 
 typedef Eigen::Matrix<uint64_t, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> RowMatrixXi64;  
 typedef Eigen::Matrix<uint64_t, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> ColMatrixXi64;  

@@ -5,57 +5,41 @@ using Eigen::Matrix;
 using namespace emp;
 using namespace std;
 
-/**
- *  初始化矩阵的数据。
- *  使用伪随机生成器 prg 随机生成 Ai、Bi 和 Bi_ 数据。
- */
 void TestSetUp::initialize_matrices(){
-    prg.random_data(Ai.data(), n * d * 8); // 随机生成 Ai 数据，对应论文中的U矩阵，指代x
-    prg.random_data(Bi.data(), d * t * 8); // 随机生成 Bi 数据，对应论文中的V矩阵，每一列指代一个w在一次迭代中的值
-    prg.random_data(Bi_.data(), n * t * 8); // 随机生成 Bi_ 数据，对应论文中的V'，每一列指代Y*-Y在一次迭代中的值
+    prg.random_data(Ai.data(), n * d * 8); 
+    prg.random_data(Bi.data(), d * t * 8); 
+    prg.random_data(Bi_.data(), n * t * 8); 
 }
 
-/**
- *  分割UV矩阵，转置各种变化
- *  最后得到两个Z矩阵，形成需要的乘法三元组 
- */
 void TestSetUp::generateMTs(){
     vector<vector<uint64_t>> ci(t, vector<uint64_t>(n)); 
     vector<vector<uint64_t>> ci_(t, vector<uint64_t>(d)); 
 
     for(int i = 0; i < t; i++){
-        RowMatrixXi64 Ai_b = Ai.block(i * n, 0, n, d); // 截取 Ai 的子矩阵 Ai_b
+        RowMatrixXi64 Ai_b = Ai.block(i * n, 0, n, d); 
         vector<vector<uint64_t>> ai(n, vector<uint64_t>(d)); 
-        RowMatrixXi64_to_vector2d(Ai_b, ai); // 将库形式的 Ai_b 转换为二维 vector ai
+        RowMatrixXi64_to_vector2d(Ai_b, ai); 
 
-        RowMatrixXi64 Ai_bt = Ai_b.transpose(); // Ai_b 的转置矩阵
+        RowMatrixXi64 Ai_bt = Ai_b.transpose(); 
         vector<vector<uint64_t>> ai_t(d, vector<uint64_t>(n));
-        RowMatrixXi64_to_vector2d(Ai_bt, ai_t); // 将 Ai_bt 转换为二维 vector
+        RowMatrixXi64_to_vector2d(Ai_bt, ai_t); 
 
-        vector<uint64_t> bi = ColVectorXi64_to_vector(Bi.col(i)); // 获取 Bi 的列向量，并转换为 vector
-        vector<uint64_t> bi_ = ColVectorXi64_to_vector(Bi_.col(i)); // 获取 Bi_ 的列向量，并转换为 vector
+        vector<uint64_t> bi = ColVectorXi64_to_vector(Bi.col(i)); 
+        vector<uint64_t> bi_ = ColVectorXi64_to_vector(Bi_.col(i)); 
 
-        secure_mult(n, d, ai, bi, ci[i]); // 执行安全乘法操作，得到 ci[i]
-        secure_mult(d, n, ai_t, bi_, ci_[i]); // 执行安全乘法操作，得到 ci_[i]
+        secure_mult(n, d, ai, bi, ci[i]); 
+        secure_mult(d, n, ai_t, bi_, ci_[i]); 
     }
 
-    vector2d_to_ColMatrixXi64(ci, Ci); // 将 ci 转换为 ColMatrixXi64 类型的矩阵 Ci
-    vector2d_to_ColMatrixXi64(ci_, Ci_); // 将 ci_ 转换为 ColMatrixXi64 类型的矩阵 Ci_
+    vector2d_to_ColMatrixXi64(ci, Ci); 
+    vector2d_to_ColMatrixXi64(ci_, Ci_); 
     cout << "Triples Generated" << endl;
 }
 
-/**
- *  @brief  安全乘法，输入矩阵A，B得到C，对应的两个矩阵的行列如下
- * 
- *  @param a 第一个矩阵，n*d矩阵
- *  @param b 第二个矩阵，d*1矩阵
- *  @param c ab乘积矩阵，n*1矩阵
- */
 void TestSetUp::secure_mult(int N, int D, vector<vector<uint64_t>>& a, vector<uint64_t>& b, vector<uint64_t> &c){
     int NUM_OT[BITLEN];
     int total_ot = 0, num_ot;
 
-    // 计算总的 OT 数目
     for (int p = 0; p < 64; p++){
         int temp = 128/(64-p);
         NUM_OT[p] = N/temp;
@@ -65,13 +49,11 @@ void TestSetUp::secure_mult(int N, int D, vector<vector<uint64_t>>& a, vector<ui
     }
     total_ot *= D;
 
-    // 分配存储空间
     block *x0, *x1, *rec;
     x0 = new block[total_ot];
     x1 = new block[total_ot];
     rec = new block[total_ot];
 
-    // 初始化索引
     int indexX0 = 0;
     int indexX1 = 0;
 
@@ -80,7 +62,6 @@ void TestSetUp::secure_mult(int N, int D, vector<vector<uint64_t>>& a, vector<ui
     sigma = new bool[total_ot];
     int index_sigma = 0;
 
-    // 分配内存并填充随机数,得到N*64*D的矩阵
     uint64_t ***X0;
     X0 = new uint64_t**[N];
     for(int p = 0; p < N; p++) {
@@ -91,48 +72,47 @@ void TestSetUp::secure_mult(int N, int D, vector<vector<uint64_t>>& a, vector<ui
         }
     }
 
-    // 具体生成x0和x1
     for (int j = 0; j < D; j++) {  
-        int_to_bool(bits_B, b[j]);  // 将整数b[j]转换为布尔数组bits_B
+        int_to_bool(bits_B, b[j]);  
 
         for (int z = 0; z < 64; z++) {  
-            num_ot = NUM_OT[z];  // 获取当前轮次的OT数量存储在num_ot中
-            uint64_t randomA[N];  // 创建长度为N的随机数数组randomA
+            num_ot = NUM_OT[z];  
+            uint64_t randomA[N]; 
 
             for (int p = 0; p < N; p++) {
-                randomA[p] = X0[p][z][j] + a[p][j];  // 计算并存储随机数值到randomA数组中
+                randomA[p] = X0[p][z][j] + a[p][j];  
             }
 
-            int elements_in_block = 128 / (64 - z);  // 计算每个块中元素的数量
+            int elements_in_block = 128 / (64 - z); 
             int indexA = 0;
 
             for (int y = 0; y < num_ot; y++) {
-                sigma[index_sigma++] = bits_B[z];  // 将bits_B[z]的值存储到sigma数组中
+                sigma[index_sigma++] = bits_B[z];  
             }
 
             for(int y = 0; y < num_ot; y++){
-                int flag = elements_in_block;  // 标记变量，用于控制循环中的元素数量
-                uint64_t temp_lo=0, temp_hi=0;  // 临时存储变量，用于存储结果
-                uint64_t r_temp_lo=0, r_temp_hi=0;  // 临时存储变量，用于存储结果
-                int elements_in_temp = 64/(64-z);  // 计算每个元素包含的位数
-                int left_bitsLo = (64 % ((64-z)*elements_in_temp));  // 计算剩余位数
+                int flag = elements_in_block; 
+                uint64_t temp_lo=0, temp_hi=0;  
+                uint64_t r_temp_lo=0, r_temp_hi=0;  
+                int elements_in_temp = 64/(64-z); 
+                int left_bitsLo = (64 % ((64-z)*elements_in_temp)); 
 
-                r_temp_lo = (X0[indexA][z][j] << z);  // 对第一部分数据进行位移操作
-                r_temp_lo >>= z;  // 恢复原始位置
-                temp_lo = (randomA[indexA++] << z);  // 对第二部分数据进行位移操作
-                temp_lo >>= z;  // 恢复原始位置
+                r_temp_lo = (X0[indexA][z][j] << z);  
+                r_temp_lo >>= z;  
+                temp_lo = (randomA[indexA++] << z); 
+                temp_lo >>= z; 
                 flag--;
 
                 for (int p=1; p<elements_in_temp; p++){
-                    if (indexA <= N-1 && flag){  // 检查是否仍有剩余元素
-                        uint64_t r_next_element = (X0[indexA][z][j] << z);  // 获取下一个数据元素并进行位移操作
-                        r_next_element >>= z;  // 恢复原始位置
-                        r_next_element <<= ((64-z) * p);  // 计算新位置
-                        r_temp_lo ^= r_next_element;  // 对结果进行异或操作
-                        uint64_t next_element = (randomA[indexA++] << z);  // 获取下一个数据元素并进行位移操作
-                        next_element >>= z;  // 恢复原始位置
-                        next_element <<= ((64-z) * p);  // 计算新位置
-                        temp_lo ^= next_element;  // 对结果进行异或操作
+                    if (indexA <= N-1 && flag){ 
+                        uint64_t r_next_element = (X0[indexA][z][j] << z); 
+                        r_next_element >>= z;  
+                        r_next_element <<= ((64-z) * p);  
+                        r_temp_lo ^= r_next_element;  
+                        uint64_t next_element = (randomA[indexA++] << z);  
+                        next_element >>= z;  
+                        next_element <<= ((64-z) * p); 
+                        temp_lo ^= next_element; 
                         flag--;
                     }
                     else
@@ -140,43 +120,43 @@ void TestSetUp::secure_mult(int N, int D, vector<vector<uint64_t>>& a, vector<ui
                 }
 
                 if (left_bitsLo){
-                    if (indexA <= N-1 && flag){  // 检查是否仍有剩余元素
-                        uint64_t r_split_element = (X0[indexA][z][j] << z);  // 获取拆分的数据元素并进行位移操作
-                        r_split_element >>= z;  // 恢复原始位置
-                        r_temp_lo ^= (r_split_element << (64-left_bitsLo));  // 对结果进行异或操作
-                        r_temp_hi ^= (r_split_element >> left_bitsLo);  // 对结果进行异或操作
-                        uint64_t split_element = (randomA[indexA++] << z);  // 获取拆分的数据元素并进行位移操作
-                        split_element >>= z;  // 恢复原始位置
-                        temp_lo ^= (split_element << (64-left_bitsLo));  // 对结果进行异或操作
-                        temp_hi ^= (split_element >> left_bitsLo);  // 对结果进行异或操作
+                    if (indexA <= N-1 && flag){  
+                        uint64_t r_split_element = (X0[indexA][z][j] << z); 
+                        r_split_element >>= z; 
+                        r_temp_lo ^= (r_split_element << (64-left_bitsLo));  
+                        r_temp_hi ^= (r_split_element >> left_bitsLo);  
+                        uint64_t split_element = (randomA[indexA++] << z);  
+                        split_element >>= z;  
+                        temp_lo ^= (split_element << (64-left_bitsLo));  
+                        temp_hi ^= (split_element >> left_bitsLo); 
                         flag--;
                     }
                 }
 
                 for (int p=0; p<elements_in_temp; p++){
-                    if (indexA <= N-1 && flag){  // 检查是否仍有剩余元素
-                        uint64_t r_next_element = (X0[indexA][z][j] << z);  // 获取下一个数据元素并进行位移操作
-                        r_next_element >>= z;  // 恢复原始位置
+                    if (indexA <= N-1 && flag){  
+                        uint64_t r_next_element = (X0[indexA][z][j] << z);  
+                        r_next_element >>= z; 
                         if (left_bitsLo)
-                            r_next_element <<= (((64-z)*p)+(64-z-left_bitsLo));  // 计算新位置
+                            r_next_element <<= (((64-z)*p)+(64-z-left_bitsLo));  
                         else
-                            r_next_element <<= ((64-z)*p);  // 计算新位置
-                        r_temp_hi ^= r_next_element;  // 对结果进行异或操作
-                        uint64_t next_element = (randomA[indexA++] << z);  // 获取下一个数据元素并进行位移操作
-                        next_element >>= z;  // 恢复原始位置
+                            r_next_element <<= ((64-z)*p);  
+                        r_temp_hi ^= r_next_element; 
+                        uint64_t next_element = (randomA[indexA++] << z);  
+                        next_element >>= z;  
                         if (left_bitsLo)
-                            next_element <<= (((64-z)*p)+(64-z-left_bitsLo));  // 计算新位置
+                            next_element <<= (((64-z)*p)+(64-z-left_bitsLo)); 
                         else
-                            next_element <<= ((64-z)*p);  // 计算新位置
-                        temp_hi ^= next_element;  // 对结果进行异或操作
+                            next_element <<= ((64-z)*p);  
+                        temp_hi ^= next_element; 
                         flag--;
                     }
                     else
                         break;
                 }
 
-                x0[indexX0++] = makeBlock(r_temp_hi, r_temp_lo);  // 生成块
-                x1[indexX1++] = makeBlock(temp_hi, temp_lo);  // 生成块
+                x0[indexX0++] = makeBlock(r_temp_hi, r_temp_lo);  
+                x1[indexX1++] = makeBlock(temp_hi, temp_lo); 
             }
 
         }
@@ -198,37 +178,34 @@ void TestSetUp::secure_mult(int N, int D, vector<vector<uint64_t>>& a, vector<ui
     }
 
     int indexRec = 0;
-    // 循环变量 j 从 0 到 D
+
     for (int j = 0; j < D; j++){
-        // 循环变量 z 从 0 到 64
+
         for (int z = 0; z < 64; z++){
             int indexA = 0;
             num_ot = NUM_OT[z];
-            // 计算每个块中的元素数量
+
             int elements_in_block = 128/(64-z);
 
             for (int y = 0; y < num_ot; y++){
-                // 标记元素数目
+
                 int flag = elements_in_block;
-                // 分别提取 64 位块的低 64 位和高 64 位
+
                 uint64_t temp_lo = extract_lo64(rec[indexRec]);
                 uint64_t temp_hi = extract_hi64(rec[indexRec++]);
 
-                // 计算每个块中元素的数量
                 int elements_in_temp = 64/(64-z);
-                // 计算剩余的左侧位数
+
                 int left_bitsLo = (64 % ((64-z) * elements_in_temp));
                 uint64_t mask;
-                // 根据条件设置掩码
+ 
                 if((64 - z) < 64)
                     mask = ((1ULL << (64-z)) - 1);
                 else
                     mask = -1;
 
-                // 遍历元素，向结果数组中添加元素
                 for(int p = 0; p < elements_in_temp; p++){
                     if (indexA <= N-1 && flag) {
-                        // 提取下一个元素，并处理加入到结果数组
                         uint64_t next_element = (temp_lo & mask);
                         next_element <<= z;
                         c[indexA++] += next_element;
@@ -239,7 +216,6 @@ void TestSetUp::secure_mult(int N, int D, vector<vector<uint64_t>>& a, vector<ui
                     else
                         break;
                 }
-                // 处理剩余的低位
                 if (left_bitsLo){
                     if (indexA <= N-1 && flag){
                         uint64_t split_mask;
@@ -256,10 +232,8 @@ void TestSetUp::secure_mult(int N, int D, vector<vector<uint64_t>>& a, vector<ui
                         flag--;
                     }
                 }
-                // 遍历元素，向结果数组中添加高位元素
                 for(int p = 0; p < elements_in_temp; p++){
                     if (indexA <= N-1 && flag) {
-                        // 提取下一个元素，并处理加入到结果数组
                         uint64_t next_element = (temp_hi & mask);
                         next_element <<= z;
                         c[indexA++] += next_element;
@@ -271,7 +245,6 @@ void TestSetUp::secure_mult(int N, int D, vector<vector<uint64_t>>& a, vector<ui
                         break;
                 }
             }
-            // 减去 X0 数组中的值
             for (int p = 0; p < N; p++){
                 c[p] -= (X0[p][z][j] << z);
             }
@@ -287,7 +260,6 @@ void TestSetUp::secure_mult(int N, int D, vector<vector<uint64_t>>& a, vector<ui
     }
     delete X0;
 
-    //计算C
     for(int i = 0; i < N; i++){
         for(int k = 0; k < D; k++){
             c[i] += (a[i][k] * b[k]);
@@ -295,7 +267,6 @@ void TestSetUp::secure_mult(int N, int D, vector<vector<uint64_t>>& a, vector<ui
     }
 }
 
-//赋值传出需要的乘法三元组
 void TestSetUp::getMTs(SetupTriples *triples){
     triples->Ai = this->Ai;
     triples->Bi = this->Bi;

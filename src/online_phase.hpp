@@ -9,8 +9,8 @@ using namespace emp;
 
 template<class Derived, class OtherDerived>
 void scale(Eigen::PlainObjectBase<Derived>& X, Eigen::PlainObjectBase<OtherDerived>& x) {
-    Derived scaled_X = X * SCALING_FACTOR; // 矩阵X进行缩放
-    x = scaled_X.template cast<uint64_t>(); // 将缩放后的矩阵X转换为uint64_t类型并存储在变量x中
+    Derived scaled_X = X * SCALING_FACTOR; 
+    x = scaled_X.template cast<uint64_t>(); 
     return;
 }
 

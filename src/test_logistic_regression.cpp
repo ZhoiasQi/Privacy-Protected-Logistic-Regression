@@ -83,13 +83,13 @@ double TestLogisticRegression::test_model(){
             if(Y[i] == SCALING_FACTOR){
                 if(predictionD[i] >= 0.5){
                     num_correct++;
-                    cout << 1 << endl;
+                    //cout << 1 << endl;
                 }
             }
             else{
                 if(predictionD[i] < 0.5){
                     num_correct++;
-                    cout << 0 << endl;
+                    //cout << 0 << endl;
                 }
             }
         }
@@ -99,5 +99,13 @@ double TestLogisticRegression::test_model(){
         return accuracy;
 
     }
+
+}
+
+
+double TestLogisticRegression::testmodel(){
+
+    auto x = test_model();
+
 
 }

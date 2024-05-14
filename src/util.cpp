@@ -54,10 +54,17 @@ vector<uint64_t> ColVectorXi64_to_vector(ColVectorXi64 X){
     return x;
 }
 
-double ran() {  
+// double ran() {  
+//     std::random_device rd;  
+//     std::mt19937 gen(rd());  
+//     std::uniform_real_distribution<> dis(A_L, B_H);   
+//     return dis(gen); 
+// }  
+
+double r(double a, double b) {  
     std::random_device rd;  
     std::mt19937 gen(rd());  
-    std::uniform_real_distribution<> dis(A_L, B_H);   
+    std::uniform_real_distribution<> dis(a, b);   
     return dis(gen); 
 }  
 
