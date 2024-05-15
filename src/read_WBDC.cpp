@@ -2,7 +2,6 @@
 
 using namespace std;
 
-//读入数据并存储在结构体向量中
 vector<BreastCancerInstance> read_WBDC_data(const string& filename) {
     vector<BreastCancerInstance> data;
 
@@ -43,7 +42,6 @@ vector<BreastCancerInstance> read_WBDC_data(const string& filename) {
     return data;
 }
 
-//测试代码：打印中间结果
 void print_WBDC_Data(const vector<BreastCancerInstance>& data) {
     for (const auto& instance : data) {
         cout << "ID: " << instance.id << endl;
@@ -56,7 +54,6 @@ void print_WBDC_Data(const vector<BreastCancerInstance>& data) {
     }
 }
 
-//把特征值转化为double矩阵
 vector<vector<double>> reverse_BreastCancerInstance_to_features(vector<BreastCancerInstance> vec){
     vector<vector<double>> res;
 
@@ -72,7 +69,6 @@ vector<vector<double>> reverse_BreastCancerInstance_to_features(vector<BreastCan
     return res;
 }
 
-//把diagnosis转化为double向量
 vector<double> reverse_BreastCancerInstance_to_labels(vector<BreastCancerInstance> vec) {
     vector<double> labels;
 

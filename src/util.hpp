@@ -17,7 +17,7 @@ void vector2d_to_ColMatrixXi64(std::vector<std::vector<uint64_t>>& x, ColMatrixX
 void vector_to_ColVectorXi64(std::vector<uint64_t>& x, ColVectorXi64& X); 
 void RowMatrixXi64_to_vector2d(RowMatrixXi64 X, std::vector<std::vector<uint64_t>>& x); 
 std::vector<uint64_t> ColVectorXi64_to_vector(ColVectorXi64 X); 
-double ran();
+double r(double a, double b);
 
 void print128_num(emp::block var); 
 void print_binary(uint64_t int_); 

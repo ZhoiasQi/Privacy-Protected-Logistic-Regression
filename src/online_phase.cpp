@@ -115,22 +115,30 @@ void OnlinePhase::train_batch(int iter, int indexLo){
 
     // int min = std::min(iter, 15);
     //cout << min;
-    auto k = alpha_inv;
+    // auto k = alpha_inv;
 
     // if(iter < 5){
     //     k = alpha_inv;
     // }
-    // else if(iter < 36){
-    //     int e = (iter - 5) / 3;
+    // else if(iter < 45){
+    //     int e = (iter - 5) / 5;
     //     k = Mypow(k, e);
     // }
     // else{
-    //     k = Mypow(k, 10);
+    //     k = Mypow(k, 8);
     // }
 
-    // cout << k << " ";
+    // if(iter / 5 < 10){
+    //     k = Mypow(k, (iter / 5) + 1);
+    // }
+    // else{
+    //     k = Mypow(k, 6);
+    // }
+    
+    //cout << k << " ";
 
-    truncate<ColVectorXi64>(i, k * BATCH_SIZE, delta);
+    // truncate<ColVectorXi64>(i, k * BATCH_SIZE, delta);
+    truncate<ColVectorXi64>(i, alpha_inv * BATCH_SIZE, delta);
 
     wi = wi - delta;
 

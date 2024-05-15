@@ -28,4 +28,6 @@ void offlineTest(vector<vector<uint64_t>> data, vector<uint64_t> label, TestingP
 //     return dis(gen); 
 // }  
 
+void normalizeColumns(std::vector<std::vector<double>>& dataFeatures);
+
 #endif

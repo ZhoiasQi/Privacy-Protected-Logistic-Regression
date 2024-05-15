@@ -53,14 +53,11 @@ ColVectorXi64 sigmoid(ColVectorXi64 x, int party, emp::NetIO* io){
 
     vector<uint64_t> res;
 
-    //随机数生成器
     PRG prg;
-    //生成OT
-    // Group* G = new Group;
-    // OTCO<NetIO> ot(io, G);
-    int length = size;  //每次OT都只传一个block
-    SHOTExtension<emp::NetIO>* send_ot_;  // OT 发送端对象指针
-    SHOTExtension<emp::NetIO>* recv_ot_;  // OT 接收端对象指针
+
+    int length = size;  
+    SHOTExtension<emp::NetIO>* send_ot_; 
+    SHOTExtension<emp::NetIO>* recv_ot_;  
 
     send_ot_ = new SHOTExtension<NetIO>(io);
     recv_ot_ = new SHOTExtension<NetIO>(io);

@@ -117,7 +117,7 @@ public:
         }
 
         double accuracy = num_correct/((double) n_);
-        cout << "Accuracy on testing the trained model is " << accuracy * 100 << endl;
+        cout << "Accuracy on testing the trained model is " /*<< std::fixed << std::setprecision(2)*/ << accuracy * 100 << "%" << endl;
     }
 };
 

@@ -21,7 +21,6 @@ public:
     OfflineSetUp* setup; 
     OnlinePhase* online;  
 
-    //ÑµÁ·½×¶Î¹¹Ôìº¯Êı
     LogisticRegression(RowMatrixXi64& training_data, ColVectorXi64& training_labels, TrainingParams params, emp::NetIO* io) {
         this->n = params.n;  
         this->d = params.d; 

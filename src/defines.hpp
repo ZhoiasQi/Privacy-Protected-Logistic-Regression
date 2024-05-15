@@ -5,8 +5,8 @@
 
 #define BITLEN 64 
 
-#define BATCH_SIZE 16
-#define LEARNING_RATE_INV 32
+#define BATCH_SIZE 64
+#define LEARNING_RATE_INV 1024
 
 #define BATCH_SIZE_I 64
 #define LEARNING_RATE_INV_I 1024
@@ -19,9 +19,6 @@
 
 #define SCALING_FACTOR 8192
 #define HALF_OF_ONE 4096
-
-#define A_L 81
-#define B_H 85
 
 extern int PARTY;  
 

@@ -122,3 +122,63 @@ void offlineTest(vector<vector<uint64_t>> data, vector<uint64_t> label, TestingP
 
     trainModel.test_model(testX, testY);
 }
+
+void normalizeColumns(std::vector<std::vector<double>>& dataFeatures) {  
+
+    if (dataFeatures.empty()) return; // 如果矩阵为空，直接返回  
+
+  
+
+    // 找出每一列的最大值和最小值  
+
+    std::vector<double> minValues(dataFeatures[0].size(), std::numeric_limits<double>::max());  
+
+    std::vector<double> maxValues(dataFeatures[0].size(), std::numeric_limits<double>::lowest());  
+
+    for (const auto& row : dataFeatures) {  
+
+        if (row.size() != minValues.size()) {  
+
+            throw std::runtime_error("Matrix is not rectangular (all rows must have the same number of elements).");  
+
+        }  
+
+        for (size_t j = 0; j < row.size(); ++j) {  
+
+            minValues[j] = std::min(minValues[j], row[j]);  
+
+            maxValues[j] = std::max(maxValues[j], row[j]);  
+
+        }  
+
+    }  
+
+  
+
+    // 按列归一化  
+
+    for (auto& row : dataFeatures) {  
+
+        for (size_t j = 0; j < row.size(); ++j) {  
+
+            // 避免除以0的情况  
+
+            if (maxValues[j] == minValues[j]) {  
+
+                // 可以选择设置一个默认值，例如0或者保持不变  
+
+                // row[j] = 0; // 或者保持原值 row[j] = row[j];  
+
+                continue;  
+
+            }  
+
+            // 归一化到0-1范围  
+
+            row[j] = (row[j] - minValues[j]) / (maxValues[j] - minValues[j]);  
+
+        }  
+
+    }  
+
+}

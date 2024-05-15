@@ -23,7 +23,7 @@ int main(int argc, char** argv){
     PARTY = atoi(argv[1]); 
     port = atoi(argv[2]);  
     //num_iters = atoi(argv[3]);  
-    num_iters = 15;
+    num_iters = 30;
 
     try{
         int x = -1;
@@ -59,6 +59,14 @@ int main(int argc, char** argv){
 
     dataFeatures = reverse_BreastCancerInstance_to_features(dataSet);
     dataLabels = reverse_BreastCancerInstance_to_labels(dataSet);
+
+    //normalizeColumns(dataFeatures);
+    // for(int i = 0; i < dataFeatures.size(); i++){
+    //     for(int j = 0; j < dataFeatures.at(0).size(); j++){
+    //         cout << dataFeatures.at(i).at(j) << " ";
+    //     }
+    //     cout << endl;
+    // }
     
     /****************************对数据进行前期预处理**************************************/
     vector<vector<uint64_t>> uint64_dataFeatures;
@@ -207,18 +215,10 @@ int main(int argc, char** argv){
 
     testModel.secret_share_w();
 
-    auto acc = testModel.test_model();
-
-    if(PARTY == CAROL) cout << "Accuracy on testing the trained model is " << acc * 100 << endl;
-
-    if(acc < 0.8){
-        acc = ran();
-    } else{
-        acc *= 100;
-    }
+    auto acc = testModel.testmodel();
 
     if(PARTY == CAROL){
-        //cout << "Accuracy on testing the trained model is " << acc << endl;
+        cout << "Accuracy on testing the trained model is " << std::fixed << std::setprecision(2) << acc * 100 << "%" << endl;
     }
 
     auto end = std::chrono::high_resolution_clock::now(); 
