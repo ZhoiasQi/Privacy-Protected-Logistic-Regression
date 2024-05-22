@@ -1,39 +1,41 @@
+# æ²¡æœ‰åšå®Œï¼Œåªæ˜¯åŠæˆå“ï¼Œæ²¡æœ‰å‚è€ƒä»·å€¼
+
 # **Privacy Protected Logistic Regression**
 
-*Ö§³ÖÒşË½±£»¤µÄÂß¼­»Ø¹éËã·¨Éè¼ÆÓëÊµÏÖ*
+*æ”¯æŒéšç§ä¿æŠ¤çš„é€»è¾‘å›å½’ç®—æ³•è®¾è®¡ä¸å®ç°*
 
 # **Build**
 
-*±¾¿ÎÌâÊ¹ÓÃÁËC++À´¹¹½¨ÏîÄ¿£¬²¢ÇÒ´ËÏîÄ¿ĞèÒªÔÚUbuntuÉÏÔËĞĞ¡£*
+*æœ¬è¯¾é¢˜ä½¿ç”¨äº†C++æ¥æ„å»ºé¡¹ç›®ï¼Œå¹¶ä¸”æ­¤é¡¹ç›®éœ€è¦åœ¨Ubuntuä¸Šè¿è¡Œã€‚*
 
 ### **Preparation**
 
-*°²×°emp-ot(v0.1°æ±¾)*
+*å®‰è£…emp-ot(v0.1ç‰ˆæœ¬)*
 ```
-//°²×°empµÄ×¼±¸¹¤×÷
+//å®‰è£…empçš„å‡†å¤‡å·¥ä½œ
 git clone -b v0.1 https://github.com/emp-toolkit/emp-readme.git
 cd emp-readme/
 cd scripts/
 bash install_packages.sh 
 
-//°²×°emp-tool
+//å®‰è£…emp-tool
 git clone -b v0.1 https://github.com/emp-toolkit/emp-tool.git
 cd emp-tool/
 cmake . && sudo make install
 
-//°²×°emp-ot
+//å®‰è£…emp-ot
 git clone -b v0.1 https://github.com/emp-toolkit/emp-ot.git
 cd emp-ot/
 cmake . && sudo make install
 ```
 
-*°²×°Eigen3£¨v3.3.7°æ±¾£©*
+*å®‰è£…Eigen3ï¼ˆv3.3.7ç‰ˆæœ¬ï¼‰*
 ```
-//ÏÂÔØ²¢½âÑ¹
+//ä¸‹è½½å¹¶è§£å‹
 wget https://gitlab.com/libeigen/eigen/-/archive/3.3.7/eigen-3.3.7.tar.gz
 tar -zxvf eigen-3.3.7.tar.gz
 
-//°²×°
+//å®‰è£…
 cd eigen-3.3.7
 mkdir build
 cd build/
@@ -52,12 +54,12 @@ make
 ```
 
 ### **Execution**
-*ÏÂÃæÁ½¸ö³ÌĞò·Ö±ğÓÃÀ´²âÊÔÖ±½ÓÊ¹ÓÃÂß¼­»Ø¹éÀíÏëÇé¿öÏÂµÄÑµÁ·×¼È·ÂÊºÍÖ§³ÖÒşË½±£»¤µÄÂß¼­»Ø¹éËã·¨µÄÑµÁ·×¼È·ÂÊÓÃÀ´±È½Ï*
+*ä¸‹é¢ä¸¤ä¸ªç¨‹åºåˆ†åˆ«ç”¨æ¥æµ‹è¯•ç›´æ¥ä½¿ç”¨é€»è¾‘å›å½’ç†æƒ³æƒ…å†µä¸‹çš„è®­ç»ƒå‡†ç¡®ç‡å’Œæ”¯æŒéšç§ä¿æŠ¤çš„é€»è¾‘å›å½’ç®—æ³•çš„è®­ç»ƒå‡†ç¡®ç‡ç”¨æ¥æ¯”è¾ƒ*
 * `ideal_functionality`
   - `./build/bin/ideal_functionality [num_iter]`
 - `secure_ML`
   - On local machine
-    - ÔÚµÚÒ»¸öÖÕ¶ËÊäÈë
+    - åœ¨ç¬¬ä¸€ä¸ªç»ˆç«¯è¾“å…¥
         - `./build/bin/PPLR 1 8000 [num_iter]` 
-    - ÔÚµÚ¶ş¸öÖÕ¶ËÊäÈë
+    - åœ¨ç¬¬äºŒä¸ªç»ˆç«¯è¾“å…¥
         - `./build/bin/PPLR 2 8000 [num_iter]`
